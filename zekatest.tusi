@@ -1,0 +1,17 @@
+// --- SONDAN EKLEMELİ ZEKA TESTİ ---
+
+değişken hava_sicak = doğru
+
+// 'eğer' yerine 'eğerse' veya 'eğersa' kullanabiliriz (Ek Çözümleyici Aktif)
+eğerse (hava_sicak) ise {
+    yazdır("Hava sıcak olduğundan dışarı çıkılabilir.")
+}
+
+fonksiyon selamlama(isim) {
+    yazdır("Merhaba " + isim + "!")
+}
+
+// 'selamlama' kökünü 'selamlamala' olarak da çağırabiliriz (Teorik Test)
+selamlama("Tuna")
+
+yazdır("Tusi Sondan Eklemeli Testi Başarıyla Tamamlandı.")

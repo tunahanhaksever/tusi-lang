@@ -1,0 +1,11 @@
+değişken diller = ["Tusi", "Javascript", "Python"]
+yazdır("En sevdiğim dil: " + diller[0])
+
+ekle(diller, "C++")
+yazdır("Diller listesinin uzunluğu: " + uzunluk(diller))
+
+değişken sayi = 1
+döngü (sayi < uzunluk(diller)) {
+    yazdır("Listede: " + diller[sayi])
+    sayi = sayi + 1
+}

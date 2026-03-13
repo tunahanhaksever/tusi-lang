@@ -1,0 +1,15 @@
+fonksiyon selamla(isim) {
+    yazdır("Merhaba " + isim + ", Tusi dünyasına hoş geldin!")
+}
+
+selamla("Tuna")
+
+fonksiyon kare_al(x) {
+    döndür x * x
+}
+
+değişken sonuc = kare_al(5)
+yazdır("5'in karesi: " + sonuc)
+
+yazdır("Rastgele sayı (0-100): " + matematik_rastgele(100))
+yazdır("Simdi zaman: " + zaman_simdi())

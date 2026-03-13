@@ -1,0 +1,32 @@
+// --- TUSI PROFESSIONAL YÖNETİM PANELİ v3.0 ---
+
+fonksiyon uygulama_motoru(istek, yanit) {
+    yazdır("İstek: " + istek["yol"])
+
+    // Veritabanından kullanıcıları alalım
+    değişken veriler = vt_oku("kullanicilar")
+    eğer (veriler == boş) ise {
+        veriler = ["Sistem Yöneticisi"]
+        vt_kaydet("kullanicilar", veriler)
+    }
+
+    eğer (istek["yol"] == "/") ise {
+        değişken icerik = "<h1>Tusi Yönetim Paneli</h1>"
+        icerik = icerik + "<p>Sistemdeki Kullanıcılar: " + veriler + "</p>"
+        icerik = icerik + "<p><a href='/yeni-kullanici'>Yeni Kullanıcı Ekle</a></p>"
+        icerik = icerik + "<hr><p>İşlemci Mimarisi: " + dis_komut("echo %PROCESSOR_ARCHITECTURE%") + "</p>"
+        
+        yanit_html(yanit, icerik)
+    } değilse {
+        eğer (istek["yol"] == "/yeni-kullanici") ise {
+            ekle(veriler, "Kullanici_" + zaman_simdi())
+            vt_kaydet("kullanicilar", veriler)
+            yanit_html(yanit, "<h2>Kullanıcı Eklendi!</h2><a href='/'>Geri Dön</a>")
+        } değilse {
+            yanit_html(yanit, "<h1>404 - Sayfa Bulunamadı</h1>")
+        }
+    }
+}
+
+yazdır("Tusi Pro v3.0 Sistemi Başlatılıyor...")
+sunucu_baslat(8080, uygulama_motoru)

@@ -4,27 +4,27 @@
 
 ![Tusi Lang Banner](https://img.shields.io/badge/Tusi_Language-v4.0.0-e11d48?style=for-the-badge&logo=codeforces&logoColor=white)
 ![Author](https://img.shields.io/badge/Yarat%C4%B1c%C4%B1-Tunahan_Haksever-00f0ff?style=for-the-badge&logo=github&logoColor=white)
-![PyQt6 GUI Support](https://img.shields.io/badge/TusiGUI-PyQt6_Engine-ff007f?style=for-the-badge&logo=qt&logoColor=white)
-![Package Manager](https://img.shields.io/badge/TPM-pip_install_benzeri-fbbf24?style=for-the-badge&logo=pypi&logoColor=white)
-![Online Playground](https://img.shields.io/badge/Web_Studio-Canl%C4%B1-10b981?style=for-the-badge&logo=google-chrome&logoColor=white)
+![GUI Engine](https://img.shields.io/badge/G%C3%B6rsel_Aray%C3%BCz-TusiGUI_Engine-ff007f?style=for-the-badge)
+![Package Manager](https://img.shields.io/badge/Paket_Y%C3%B6netimi-TPM_Hub-fbbf24?style=for-the-badge)
+![Online Studio](https://img.shields.io/badge/Web_Studio-Canl%C4%B1-10b981?style=for-the-badge&logo=google-chrome&logoColor=white)
 
-**Tunahan Haksever tarafından geliştirilen; Python, PyQt6 ve Pandas ekosistemini Türkçenin matematiksel yapısıyla buluşturan tam teşekküllü modern yerli programlama dili.**
+**Tunahan Haksever tarafından geliştirilen; Türkçenin zengin matematiksel ve mantıksal yapısını dijital dünyaya taşıyan, bağımsız sözdizimine, TusiGUI görsel arayüz motoruna ve TPM paket yöneticisine sahip modern açık kaynak programlama dili.**
 
-[🌐 Web Studio & Playground (Hemen Dene)](#-web-studio--playground) • [🖥️ PyQt6 Tarzı TusiGUI](#-1-pyqt6-tarzı-masaüstü-arayüz-geliştirme-tusigui) • [💼 Ticari Muhasebe & E-Fatura](#-2-ticari-muhasebe-ve-finans-kütüphanesi) • [📦 TPM Paket Yöneticisi](#-3-tpm-tusi-paket-yöneticisi-pip-install-benzeri) • [Kurulum](#-kurulum)
+[🌐 Web Studio & 3 Dilde Dokümantasyon](#-web-studio--canlı-laboratuvar) • [🖥️ TusiGUI Görsel Arayüz](#-1-tusigui-görsel-arayüz-motoru) • [💼 Ticari Muhasebe & E-Fatura](#-2-ticari-muhasebe-ve-finans-kütüphanesi) • [📦 TPM Paket Yöneticisi](#-3-tpm-tusi-paket-yöneticisi) • [Kurulum](#-kurulum)
 
 </div>
 
 ---
 
-## 🌐 Web Studio & Playground
-Herhangi bir yükleme yapmadan doğrudan tarayıcınızda TusiGUI pencereleri tasarlayın ve kod çalıştırın:  
+## 🌐 Web Studio & Canlı Laboratuvar
+Herhangi bir kurulum yapmadan doğrudan web tarayıcınızda TusiGUI pencereleri tasarlayın, kod yazın ve **Türkçe, İngilizce ve Azerbaycan Türkçesi** dillerinde resmî dokümantasyonu inceleyin:  
 👉 **[https://tunahanhaksever.github.io/tusi-lang/](https://tunahanhaksever.github.io/tusi-lang/)**
 
 ---
 
-## 📦 Kurulum
+## 📦 Kurulum ve Çalıştırma
 
-### 1. NPM ile Global Kurulum (Tüm Sistemde Çalışır):
+### 1. Global Kurulum:
 ```bash
 npm install -g tusi-lang
 ```
@@ -34,15 +34,15 @@ Kurulum tamamlandıktan sonra terminalinizde doğrudan:
 - `tusi --repl`
 - `tpm kur muhasebe-pro`
 
-komutlarını kullanabilirsiniz!
+komutlarını kullanabilirsiniz.
 
 ---
 
-## 🚀 Öne Çıkan Kütüphaneler ve Özellikler
+## 🚀 Temel Kütüphaneler ve Mimariler
 
-### 🖥️ 1. PyQt6 Tarzı Masaüstü Arayüz Geliştirme (`TusiGUI`)
+### 🖥️ 1. TusiGUI Görsel Arayüz Motoru (`Arayüz`)
 
-Tıpkı Python'daki PyQt6 veya Tkinter gibi görsel pencereler, formlar, tablolar ve butonlar oluşturabilirsiniz:
+Masaüstü ve web ortamında görsel pencereler, formlar, tablolar ve butonlar oluşturabilirsiniz:
 
 ```tusi
 // Ana Pencereyi Tanımla
@@ -96,7 +96,7 @@ yazdır("GENEL TOPLAM:", Muhasebe.paraFormati(fatura.genelToplam))
 
 ---
 
-### 📊 3. Pandas Tarzı Veri Analizi (`Veri`)
+### 📊 3. Veri ve Tablo Analizi (`Veri`)
 
 ```tusi
 değişken satislar = [
@@ -113,7 +113,7 @@ yazdır("En Çok Satan:", enCokSatan.urun)
 
 ---
 
-### 📦 4. TPM — Tusi Paket Yöneticisi (`pip install` Benzeri)
+### 📦 4. TPM — Tusi Paket Yöneticisi
 
 Topluluk kütüphanelerini tek satırla kurun:
 

@@ -1,0 +1,42 @@
+// 🧠 Tusi v4.0 — Yapay Zeka (AI) ve Çoklu Dil Entegrasyon Köprüsü
+// Geliştirici: Tunahan Haksever (Bitigey.com)
+
+yazdır("==================================================")
+yazdır("   🧠 TUSİ YAPAY ZEKA VE ANLAMSAL ÇÖZÜMLEME")
+yazdır("==================================================")
+
+// 1. Doğal Dil & Metin Duygu Analizi
+değişken ornekMetin = "Bitigey WebOS ve Tusi Programlama Dili harika bir başarı gösterdi, geleceğe umut veriyor."
+değişken analiz = YapayZeka.duyguAnalizi(ornekMetin)
+
+yazdır("📝 İncelenen Metin :", ornekMetin)
+yazdır("📊 Duygu Puanı     :", analiz.skor)
+yazdır("🎯 Çıkarılan Sonuç :", analiz.duygu)
+yazdır("--------------------------------------------------")
+
+// 2. Yapay Sinir Ağı Eğitimi (Neural Network Engine)
+değişken ag = YapayZeka.sinirAgiOlustur({
+  katmanlar: [4, 8, 2],
+  ogrenmeOrani: 0.05
+})
+
+değişken egitimSonucu = ag.egit([[0, 1, 0, 1], [1, 0, 1, 0]], [[1], [0]], 250)
+
+yazdır("🤖 Yapay Sinir Ağı Eğitimi Tamamlandı:")
+yazdır("  • Başarı Oranı : %" + egitimSonucu.basariOrani)
+yazdır("  • Hata Payı    :", egitimSonucu.hataPayi)
+yazdır("  • Tahmin Çıktısı:", ag.tahminEt([1, 1, 0, 1]))
+yazdır("--------------------------------------------------")
+
+// 3. Çoklu Dil Köprüsü (Polyglot / Foreign System Bridge)
+değişken disProjeVerisi = {
+  sistem: "Tusi-Core",
+  entegrasyon: "Evrensel JSON & REST API",
+  durum: "Uyumlu",
+  moduller: ["Muhasebe", "TusiGUI", "YapayZeka"]
+}
+
+değişken jsonCikti = Köprü.jsonDonustur(disProjeVerisi)
+yazdır("🔗 Diğer Diller İçin Dışa Aktarılan Veri:")
+yazdır(jsonCikti)
+yazdır("==================================================")

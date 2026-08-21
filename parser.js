@@ -400,6 +400,25 @@ class Parser {
       return expr;
     }
 
+    // Anonymous Function Expression: fonksiyon(params) { ... }
+    if (this.match(TokenType.FUNCTION)) {
+      let name = null;
+      if (this.check(TokenType.IDENTIFIER)) {
+        name = this.advance().value;
+      }
+      this.consume(TokenType.LPAREN, "Fonksiyon parametreleri için '(' bekleniyor.");
+      const params = [];
+      if (!this.check(TokenType.RPAREN)) {
+        do {
+          params.push(this.consume(TokenType.IDENTIFIER, 'Parametre ismi bekleniyor.').value);
+        } while (this.match(TokenType.COMMA));
+      }
+      this.consume(TokenType.RPAREN, "Parametre listesinin sonunda ')' bekleniyor.");
+      this.consume(TokenType.LBRACE, "Fonksiyon gövdesi için '{' bekleniyor.");
+      const body = this.block();
+      return { type: 'FunctionDeclaration', name, params, body, isAnonymous: !name };
+    }
+
     throw new Error(`[Satır ${token.line}, Sütun ${token.col}] Beklenmeyen ifade: '${token.value || token.type}'`);
   }
 }

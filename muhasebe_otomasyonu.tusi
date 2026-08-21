@@ -1,0 +1,46 @@
+// 💼 Tusi v4.0 — Ticari Muhasebe & E-Fatura Sistemi
+// Geliştirici: Tunahan Haksever (Bitigey.com)
+
+yazdır("==================================================")
+yazdır("   💼 TUSİ TİCARİ MUHASEBE VE FİNANS SİSTEMİ")
+yazdır("==================================================")
+
+// 1. Fatura Kesme İşlemi
+değişken faturaDetay = {
+  no: "FTR-2026-0089",
+  musteri: "Bitigey Edebiyat & Teknoloji A.Ş.",
+  kdvOrani: 20,
+  kalemler: [
+    { baslik: "Bitigey WebOS Lisansı", adet: 2, fiyat: 15000 },
+    { baslik: "Tusi-Lang Kurumsal Destek", adet: 1, fiyat: 25000 },
+    { baslik: "Sunucu ve Bulut Barındırma", adet: 12, fiyat: 1200 }
+  ]
+}
+
+değişken kesilenFatura = Muhasebe.faturaOlustur(faturaDetay)
+
+yazdır("📄 Fatura No   :", kesilenFatura.faturaNo)
+yazdır("🏢 Müşteri     :", kesilenFatura.musteri)
+yazdır("📅 Tarih       :", kesilenFatura.tarih)
+yazdır("--------------------------------------------------")
+yazdır("💵 Ara Toplam  :", Muhasebe.paraFormati(kesilenFatura.araToplam))
+yazdır("📊 %20 KDV     :", Muhasebe.paraFormati(kesilenFatura.kdvTutari))
+yazdır("💰 GENEL TOPLAM:", Muhasebe.paraFormati(kesilenFatura.genelToplam))
+yazdır("==================================================")
+
+// 2. Gelir - Gider ve Kâr/Zarar Raporu
+değişken aylikHareketler = [
+  { tur: "gelir", aciklama: "Yazılım Satışı", tutar: 85000 },
+  { tur: "gelir", aciklama: "Danışmanlık", tutar: 32000 },
+  { tur: "gider", aciklama: "Ofis Kirası", tutar: 18000 },
+  { tur: "gider", aciklama: "Sunucu Maliyetleri", tutar: 6500 },
+  { tur: "gider", aciklama: "Personel Maaşları", tutar: 45000 }
+]
+
+değişken rapor = Muhasebe.gelirGiderRaporu(aylikHareketler)
+
+yazdır("📈 AY SONU FİNANSAL BİLANÇO:")
+yazdır("  • Toplam Gelir :", Muhasebe.paraFormati(rapor.toplamGelir))
+yazdır("  • Toplam Gider :", Muhasebe.paraFormati(rapor.toplamGider))
+yazdır("  • Net Kâr/Zarar:", Muhasebe.paraFormati(rapor.netKarZarar), "--> [" + rapor.durum + "]")
+yazdır("==================================================")

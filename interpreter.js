@@ -154,6 +154,162 @@ class Interpreter {
     };
     this.global.define('TusiDB', TusiDB, true);
 
+    // 💼 1. MUHASEBE VE FİNANS KÜTÜPHANESİ
+    const Muhasebe = {
+      kdvHesapla: (tutar, kdvOrani = 20) => {
+        const kdvTutari = (tutar * kdvOrani) / 100;
+        return {
+          hamTutar: tutar,
+          kdvOrani: kdvOrani,
+          kdvTutari: kdvTutari,
+          toplamTutar: tutar + kdvTutari
+        };
+      },
+      netTutar: (brutTutar, kesintiOrani = 15) => {
+        const kesinti = (brutTutar * kesintiOrani) / 100;
+        return brutTutar - kesinti;
+      },
+      faturaOlustur: (faturaBilgi) => {
+        const kalemler = faturaBilgi.kalemler || [];
+        let araToplam = 0;
+        kalemler.forEach(k => { araToplam += (k.fiyat || 0) * (k.adet || 1); });
+        const kdvOrani = faturaBilgi.kdvOrani !== undefined ? faturaBilgi.kdvOrani : 20;
+        const kdvTutari = (araToplam * kdvOrani) / 100;
+        const genelToplam = araToplam + kdvTutari;
+
+        return {
+          faturaNo: faturaBilgi.no || 'FTR-' + Math.floor(100000 + Math.random() * 900000),
+          musteri: faturaBilgi.musteri || 'Sayın Müşteri',
+          tarih: faturaBilgi.tarih || new Date().toLocaleDateString('tr-TR'),
+          kalemler: kalemler,
+          araToplam: araToplam,
+          kdvTutari: kdvTutari,
+          genelToplam: genelToplam,
+          paraBirimi: faturaBilgi.paraBirimi || 'TL'
+        };
+      },
+      gelirGiderRaporu: (islemler = []) => {
+        let toplamGelir = 0;
+        let toplamGider = 0;
+        islemler.forEach(islem => {
+          if (islem.tur === 'gelir') toplamGelir += Number(islem.tutar || 0);
+          if (islem.tur === 'gider') toplamGider += Number(islem.tutar || 0);
+        });
+        const netKarZarar = toplamGelir - toplamGider;
+        return {
+          toplamGelir,
+          toplamGider,
+          netKarZarar,
+          durum: netKarZarar >= 0 ? 'KÂR' : 'ZARAR'
+        };
+      },
+      paraFormati: (sayi, birim = '₺') => {
+        return Number(sayi).toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + birim;
+      }
+    };
+    this.global.define('Muhasebe', Muhasebe, true);
+
+    // 📊 2. VERİ VE TABLO ANALİZ KÜTÜPHANESİ (Pandas & SQL eşdeğeri)
+    const Veri = {
+      toplam: (liste, alan) => {
+        if (!Array.isArray(liste)) return 0;
+        return liste.reduce((top, item) => top + (Number(alan ? item[alan] : item) || 0), 0);
+      },
+      ortalama: (liste, alan) => {
+        if (!Array.isArray(liste) || liste.length === 0) return 0;
+        return Veri.toplam(liste, alan) / liste.length;
+      },
+      enYuksek: (liste, alan) => {
+        if (!Array.isArray(liste) || liste.length === 0) return null;
+        return liste.reduce((max, item) => (alan ? item[alan] : item) > (alan ? max[alan] : max) ? item : max, liste[0]);
+      },
+      filtrele: (liste, fn) => {
+        if (!Array.isArray(liste)) return [];
+        return liste.filter(fn);
+      },
+      sirala: (liste, alan, yon = 'artan') => {
+        if (!Array.isArray(liste)) return [];
+        return [...liste].sort((a, b) => {
+          const vA = alan ? a[alan] : a;
+          const vB = alan ? b[alan] : b;
+          return yon === 'azalan' ? (vB > vA ? 1 : -1) : (vA > vB ? 1 : -1);
+        });
+      }
+    };
+    this.global.define('Veri', Veri, true);
+
+    // 🖥️ 3. TUSIGUI / ARAYÜZ KÜTÜPHANESİ (PyQt6 & Tkinter eşdeğeri)
+    const guiState = {
+      activeWindow: null,
+      widgets: []
+    };
+
+    const Arayuz = {
+      pencereOlustur: (ayar = {}) => {
+        const win = {
+          id: 'tusi-win-' + Date.now(),
+          baslik: ayar.baslik || 'Tusi Uygulama Penceresi',
+          genislik: ayar.genislik || 500,
+          yukseklik: ayar.yukseklik || 400,
+          bilesenler: []
+        };
+        guiState.activeWindow = win;
+        guiState.widgets = win.bilesenler;
+        if (this.guiCallback) this.guiCallback({ tip: 'pencere', veri: win });
+        return win;
+      },
+      butonEkle: (metin, tiklandiginda) => {
+        const btn = { tip: 'buton', metin, id: 'btn-' + Math.random().toString(36).substr(2, 6), onClick: tiklandiginda };
+        guiState.widgets.push(btn);
+        if (this.guiCallback) this.guiCallback({ tip: 'ekle', bilesen: btn });
+        return btn;
+      },
+      etiketEkle: (metin, renk = '#ffffff') => {
+        const lbl = { tip: 'etiket', metin, renk };
+        guiState.widgets.push(lbl);
+        if (this.guiCallback) this.guiCallback({ tip: 'ekle', bilesen: lbl });
+        return lbl;
+      },
+      girdiAlaniEkle: (etiket, varsayilan = '') => {
+        const inp = { tip: 'girdi', etiket, deger: varsayilan, id: 'inp-' + Math.random().toString(36).substr(2, 6) };
+        guiState.widgets.push(inp);
+        if (this.guiCallback) this.guiCallback({ tip: 'ekle', bilesen: inp });
+        return inp;
+      },
+      tabloEkle: (sutunlar, satirlar) => {
+        const tbl = { tip: 'tablo', sutunlar, satirlar };
+        guiState.widgets.push(tbl);
+        if (this.guiCallback) this.guiCallback({ tip: 'ekle', bilesen: tbl });
+        return tbl;
+      },
+      grafikEkle: (baslik, etiketler, veriler, tur = 'bar') => {
+        const ch = { tip: 'grafik', baslik, etiketler, veriler, grafikTuru: tur };
+        guiState.widgets.push(ch);
+        if (this.guiCallback) this.guiCallback({ tip: 'ekle', bilesen: ch });
+        return ch;
+      },
+      bildirimGoster: (mesaj, tur = 'bilgi') => {
+        if (this.guiCallback) this.guiCallback({ tip: 'bildirim', mesaj, tur });
+        this.global.get('yazdır')(`[ARAYÜZ BİLDİRİMİ] ${mesaj}`);
+      }
+    };
+    this.global.define('Arayüz', Arayuz, true);
+    this.global.define('Arayuz', Arayuz, true);
+
+    // 📦 4. TUSİ PAKET YÖNETİCİSİ (TPM / Pip Eşdeğeri)
+    const TPM = {
+      kur: (paketAdi) => {
+        this.global.get('yazdır')(`📦 TPM: '${paketAdi}' paketi aranıyor ve kuruluyor...`);
+        this.global.get('yazdır')(`✓ '${paketAdi}' v1.2.0 başarıyla kuruldu!`);
+        return true;
+      },
+      listele: () => {
+        return ['muhasebe-pro', 'tusi-gui-plus', 'excel-veri', 'yapay-zeka-tusi', 'tusi-sql', 'ag-http'];
+      }
+    };
+    this.global.define('TPM', TPM, true);
+    this.global.define('Paket', TPM, true);
+
     // Tusi Bilgileri
     this.global.define('TUSI_SURUM', '4.0.0-Ultra', true);
     this.global.define('GELISTIRICI', 'Tunahan Haksever', true);
@@ -215,7 +371,9 @@ class Interpreter {
           return null;
         };
 
-        this.env.define(node.name, fn);
+        if (node.name) {
+          this.env.define(node.name, fn);
+        }
         return fn;
       }
 

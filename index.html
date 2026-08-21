@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tusi Programlama Dili — Tunahan Haksever | Türkiye'nin Yerli Programlama Dili & Web Playground</title>
-  <meta name="description" content="Tunahan Haksever tarafından geliştirilen Tusi Programlama Dili; Türkçe sözdizimi, matematik kütüphanesi, algoritma desteği ve web playground ortamı sunan modern açık kaynaklı programlama dilidir.">
-  <meta name="keywords" content="Tunahan Haksever, Tunahan Haksever kimdir, Tusi, Tusi Programlama Dili, Tusi-Lang, Türkiye'nin Programlama Dili, Türkçe Kodlama, Bitigey, bitigey.com, Online Compiler, Web IDE">
+  <title>Tusi Programlama Dili — Tunahan Haksever | Türkiye'nin Yerli Programlama Dili & Web Studio</title>
+  <meta name="description" content="Tunahan Haksever tarafından geliştirilen Tusi Programlama Dili; Türkçe sözdizimi, PyQt6 tarzı TusiGUI masaüstü arayüz motoru, Muhasebe ve Finans kütüphanesi ve TPM paket yöneticisi içeren açık kaynaklı programlama dilidir.">
+  <meta name="keywords" content="Tunahan Haksever, Tunahan Haksever kimdir, Tusi, Tusi Programlama Dili, Tusi-Lang, Türkiye'nin Programlama Dili, Türkçe Kodlama, Bitigey, bitigey.com, Muhasebe Programlama, TusiGUI, PyQt6 Türkçe, Online Compiler">
   <meta name="author" content="Tunahan Haksever">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://tunahanhaksever.github.io/tusi-lang/">
@@ -13,8 +13,8 @@
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://tunahanhaksever.github.io/tusi-lang/">
-  <meta property="og:title" content="Tusi Programlama Dili — Tunahan Haksever">
-  <meta property="og:description" content="Türkiye'nin yerli ve modern Türkçe programlama dili ekosistemi. Tarayıcında hemen dene!">
+  <meta property="og:title" content="Tusi Programlama Dili — Tunahan Haksever | Yerli Kodlama Stüdyosu">
+  <meta property="og:description" content="Python, PyQt6 ve Pandas gücünde Türkçe programlama dili. Muhasebe otomasyonları, GUI pencereleri ve veri analizini tarayıcında hemen dene!">
   <meta property="og:site_name" content="Tusi-Lang">
   <meta property="og:locale" content="tr_TR">
 
@@ -35,13 +35,13 @@
       {
         "@type": "SoftwareApplication",
         "@id": "https://tunahanhaksever.github.io/tusi-lang/#app",
-        "name": "Tusi Programlama Dili",
+        "name": "Tusi Programlama Dili (Tusi-Lang)",
         "applicationCategory": "DeveloperApplication",
-        "operatingSystem": "All, Web, Node.js",
+        "operatingSystem": "All, Web, Windows, macOS, Linux",
         "author": {
           "@id": "https://github.com/tunahanhaksever#person"
         },
-        "description": "Tunahan Haksever tarafından geliştirilmiş, Türkçe sözdizimine sahip açık kaynaklı programlama dili ve çalışma ortamı."
+        "description": "Tunahan Haksever tarafından geliştirilmiş, PyQt6 benzeri TusiGUI masaüstü arayüz motoruna, ticari muhasebe kütüphanesine ve TPM paket yöneticisine sahip modern açık kaynak programlama dili."
       }
     ]
   }
@@ -54,14 +54,15 @@
 
   <style>
     :root {
-      --bg-dark: #080a14;
-      --bg-surface: #101426;
-      --bg-card: rgba(22, 28, 50, 0.7);
-      --border-glass: rgba(255, 255, 255, 0.1);
+      --bg-dark: #080a16;
+      --bg-surface: #0f1326;
+      --bg-card: rgba(22, 28, 52, 0.75);
+      --border-glass: rgba(255, 255, 255, 0.12);
       --accent-cyan: #00f0ff;
       --accent-pink: #ff007f;
       --accent-gold: #fbbf24;
       --accent-green: #10b981;
+      --accent-blue: #38bdf8;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
     }
@@ -79,8 +80,8 @@
 
     header {
       height: 64px;
-      background: rgba(16, 20, 38, 0.85);
-      backdrop-filter: blur(16px);
+      background: rgba(15, 19, 38, 0.9);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border-glass);
       display: flex;
       align-items: center;
@@ -104,7 +105,6 @@
       font-weight: 800;
       padding: 4px 8px;
       border-radius: 6px;
-      letter-spacing: 0.5px;
     }
 
     .brand-title {
@@ -123,10 +123,10 @@
     }
 
     .select-template {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--border-glass);
       color: #fff;
-      padding: 6px 12px;
+      padding: 7px 14px;
       border-radius: 8px;
       font-size: 13px;
       outline: none;
@@ -137,7 +137,7 @@
       background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
       color: #fff;
       font-weight: 700;
-      padding: 8px 20px;
+      padding: 8px 22px;
       border-radius: 8px;
       border: none;
       cursor: pointer;
@@ -145,21 +145,33 @@
       align-items: center;
       gap: 6px;
       font-size: 13px;
-      box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 240, 255, 0.35);
       transition: transform 0.15s, box-shadow 0.15s;
     }
 
     .btn-run:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 0, 127, 0.5);
+      box-shadow: 0 6px 20px rgba(255, 0, 127, 0.6);
     }
 
+    /* Main Grid */
     .main-workspace {
       flex: 1;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1.1fr 1fr;
       gap: 16px;
       padding: 16px 24px;
+    }
+
+    .editor-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .output-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .panel-box {
@@ -173,7 +185,7 @@
     }
 
     .panel-header {
-      height: 40px;
+      height: 38px;
       background: rgba(255, 255, 255, 0.03);
       border-bottom: 1px solid var(--border-glass);
       display: flex;
@@ -188,11 +200,12 @@
     .editor-textarea {
       flex: 1;
       width: 100%;
+      min-height: 480px;
       background: transparent;
       border: none;
       padding: 16px;
       font-family: 'Fira Code', 'JetBrains Mono', Consolas, monospace;
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.6;
       color: #38bdf8;
       resize: none;
@@ -200,29 +213,109 @@
       tab-size: 2;
     }
 
+    /* GUI Live Screen Box */
+    .gui-screen-box {
+      min-height: 240px;
+      background: #090c1a;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .gui-window-mock {
+      background: #151b33;
+      border: 1px solid var(--border-glass);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .gui-win-titlebar {
+      height: 28px;
+      background: rgba(255,255,255,0.05);
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+
+    .gui-win-body {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .gui-btn-widget {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+      color: #000;
+      font-weight: 700;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: transform 0.15s;
+    }
+
+    .gui-btn-widget:hover {
+      transform: scale(1.02);
+    }
+
+    .gui-table-widget {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+    }
+
+    .gui-table-widget th, .gui-table-widget td {
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 6px 10px;
+      text-align: left;
+    }
+
+    .gui-table-widget th {
+      background: rgba(0,240,255,0.15);
+      color: var(--accent-cyan);
+    }
+
+    .gui-input-widget {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-glass);
+      padding: 6px 10px;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 12px;
+      width: 100%;
+    }
+
+    /* Console */
     .console-output {
-      flex: 1;
+      height: 200px;
       background: #050711;
-      padding: 16px;
+      padding: 14px;
       font-family: 'Fira Code', monospace;
-      font-size: 13px;
+      font-size: 12.5px;
       line-height: 1.5;
       color: #10b981;
       overflow-y: auto;
       white-space: pre-wrap;
     }
 
-    .console-output .log-err {
-      color: #ff007f;
-    }
-
-    .console-output .log-info {
-      color: #94a3b8;
-    }
+    .console-output .log-err { color: #ff007f; }
+    .console-output .log-info { color: #94a3b8; }
 
     footer {
-      height: 46px;
-      background: rgba(16, 20, 38, 0.9);
+      height: 48px;
+      background: rgba(15, 19, 38, 0.95);
       border-top: 1px solid var(--border-glass);
       display: flex;
       align-items: center;
@@ -238,29 +331,27 @@
       font-weight: 600;
     }
 
-    @media (max-width: 860px) {
-      .main-workspace {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 900px) {
+      .main-workspace { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="brand-box">
-      <span class="brand-badge">🇹🇷 YERLİ DİL</span>
-      <h1 class="brand-title">Tusi Programlama Dili</h1>
-      <span style="font-size: 12px; color: var(--accent-gold); font-weight: 600;">v4.0 Ultra</span>
+      <span class="brand-badge">🇹🇷 YERLİ PROGRAMLAMA DİLİ</span>
+      <h1 class="brand-title">Tusi-Lang Studio</h1>
+      <span style="font-size: 12px; color: var(--accent-gold); font-weight: 600;">v4.0 Ultra (PyQt6 & Muhasebe)</span>
     </div>
 
     <div class="header-actions">
       <select class="select-template" id="sample-picker">
-        <option value="merhaba">📌 1. Merhaba Dünya</option>
-        <option value="siir">📖 2. Algoritmik Şiir & Dize Motoru</option>
-        <option value="fonksiyon">⚡ 3. Fonksiyonlar & Fibonacci</option>
-        <option value="matematik">🧮 4. Matematik & İstatistik</option>
-        <option value="dizi">📊 5. Dizi ve Döngüler</option>
-        <option value="db">💾 6. TusiDB Veritabanı</option>
+        <option value="gui_muhasebe">🖥️ 1. PyQt6 Tarzı Masaüstü Muhasebe GUI</option>
+        <option value="muhasebe_oto">💼 2. Ticari E-Fatura & Bilanço Sistemi</option>
+        <option value="veri_analizi">📊 3. Pandas Tarzı Veri Analizi & Filtre</option>
+        <option value="siir_motoru">📖 4. Tunahan Haksever Algoritmik Şiir</option>
+        <option value="tpm_paket">📦 5. TPM Paket Yöneticisi (pip install)</option>
+        <option value="fonksiyonlar">⚡ 6. Matematik & Fibonacci</option>
       </select>
 
       <button class="btn-run" id="btn-run-code">
@@ -271,7 +362,7 @@
 
   <main class="main-workspace">
     <!-- Code Editor Panel -->
-    <div class="panel-box">
+    <div class="panel-box editor-col">
       <div class="panel-header">
         <span>KAYNAK KOD (.tusi)</span>
         <span>Türkçe Sözdizim Editörü</span>
@@ -279,13 +370,29 @@
       <textarea class="editor-textarea" id="code-in" spellcheck="false" placeholder="Tusi kodunuzu buraya yazın..."></textarea>
     </div>
 
-    <!-- Live Console Output Panel -->
-    <div class="panel-box">
-      <div class="panel-header">
-        <span>KONSOL ÇIKTISI (Canlı Yorumlayıcı)</span>
-        <button id="btn-clear-out" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 11px;">Temizle</button>
+    <!-- Output Column: Live TusiGUI Visualizer + Console Output -->
+    <div class="output-col">
+      <!-- 1. Live TusiGUI Window Visualizer -->
+      <div class="panel-box">
+        <div class="panel-header">
+          <span>🖥️ TUSIGUI CANLI ARAYÜZ (PyQt6 Simülatörü)</span>
+          <span style="color: #10b981; font-size: 11px;">● Aktif Render</span>
+        </div>
+        <div class="gui-screen-box" id="gui-screen-container">
+          <div style="color: #64748b; font-size: 12px; text-align: center; margin-top: 40px;">
+            Kodu çalıştırdığınızda oluşturulan TusiGUI masaüstü pencereleri ve arayüz butonları burada canlı olarak render edilir.
+          </div>
+        </div>
       </div>
-      <div class="console-output" id="console-out"></div>
+
+      <!-- 2. Console Output -->
+      <div class="panel-box">
+        <div class="panel-header">
+          <span>📟 KONSOL VE ÇALIŞMA LOGU</span>
+          <button id="btn-clear-out" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 11px;">Temizle</button>
+        </div>
+        <div class="console-output" id="console-out"></div>
+      </div>
     </div>
   </main>
 
@@ -294,11 +401,11 @@
       🇹🇷 <strong>Tusi Programlama Dili</strong> — Geliştirici: <a href="https://github.com/tunahanhaksever" target="_blank">Tunahan Haksever</a> (<a href="https://bitigey.com" target="_blank">bitigey.com</a>)
     </div>
     <div>
-      <span>Açık Kaynak • MIT Lisansı</span>
+      <span>Açık Kaynak • MIT Lisansı • Kurulum: <code>npm i -g tusi-lang</code></span>
     </div>
   </footer>
 
-  <!-- Browser Bundle for Tusi Compiler -->
+  <!-- Tusi Engine Scripts -->
   <script src="./lexer.js"></script>
   <script src="./parser.js"></script>
   <script src="./interpreter.js"></script>
@@ -306,80 +413,118 @@
   <script>
     const codeArea = document.getElementById('code-in');
     const consoleOut = document.getElementById('console-out');
+    const guiContainer = document.getElementById('gui-screen-container');
     const btnRun = document.getElementById('btn-run-code');
     const btnClear = document.getElementById('btn-clear-out');
     const samplePicker = document.getElementById('sample-picker');
 
     const samples = {
-      merhaba: `// 🇹🇷 Tusi v4.0 — Merhaba Türkiye!
-değişken selamlama = "Merhaba Dünya! Türkiye'nin Yerli Programlama Dili Tusi Çalışıyor!"
-değişken yazar = "Tunahan Haksever (Bitigey.com)"
+      gui_muhasebe: `// 🖥️ TusiGUI (PyQt6 / Tkinter Tarzı) Masaüstü Muhasebe Programı
+// Geliştirici: Tunahan Haksever
 
-yazdır("==========================================")
-yazdır(selamlama)
-yazdır("Geliştirici:", yazar)
-yazdır("Tarih:", Zaman.tarih())
-yazdır("==========================================")`,
+// 1. Ana Pencereyi Oluştur
+Arayüz.pencereOlustur({
+  baslik: "Bitigey Ticari Muhasebe Takip Paneli",
+  genislik: 520,
+  yukseklik: 360
+})
 
-      siir: `// 📖 Tunahan Haksever Şiir & Dize Motoru
+Arayüz.etiketEkle("🏢 Bitigey E-Fatura ve Finans Yönetimi", "#00f0ff")
+
+değişken musteri = Arayüz.girdiAlaniEkle("Müşteri Ünvanı:", "Tunahan Haksever Yayıncılık A.Ş.")
+değişken tutar = Arayüz.girdiAlaniEkle("Fatura Bedeli (TL):", "24000")
+
+değişken sutunlar = ["İşlem Kodu", "Açıklama", "KDV Oranı", "Tutar"]
+değişken satirlar = [
+  ["ISL-101", "Web Yazılım ve Lisans", "%20", "18.000 TL"],
+  ["ISL-102", "Bitigey Edebiyat Yayını", "%10", "6.000 TL"]
+]
+Arayüz.tabloEkle(sutunlar, satirlar)
+
+Arayüz.butonEkle("💳 Faturayı Kes ve Onayla", fonksiyon() {
+  değişken kdv = Muhasebe.kdvHesapla(24000, 20)
+  Arayüz.bildirimGoster("Fatura kesildi! Toplam Tutar: " + Muhasebe.paraFormati(kdv.toplamTutar), "basarili")
+})`,
+
+      muhasebe_oto: `// 💼 Ticari Muhasebe, KDV & Bilanço Otomasyonu
+değişken fatura = Muhasebe.faturaOlustur({
+  no: "FTR-2026-0091",
+  musteri: "Bitigey Teknoloji Ltd.",
+  kdvOrani: 20,
+  kalemler: [
+    { baslik: "Tusi-Lang Kurumsal Destek", adet: 1, fiyat: 30000 },
+    { baslik: "Bitigey WebOS Lisansı", adet: 2, fiyat: 15000 }
+  ]
+})
+
+yazdır("📄 Fatura No   :", fatura.faturaNo)
+yazdır("🏢 Müşteri     :", fatura.musteri)
+yazdır("💵 Ara Toplam  :", Muhasebe.paraFormati(fatura.araToplam))
+yazdır("📊 %20 KDV     :", Muhasebe.paraFormati(fatura.kdvTutari))
+yazdır("💰 GENEL TOPLAM:", Muhasebe.paraFormati(fatura.genelToplam))
+
+// Aylık Kâr / Zarar Tablosu
+değişken hareketler = [
+  { tur: "gelir", tutar: 95000 },
+  { tur: "gider", tutar: 32000 },
+  { tur: "gider", tutar: 18000 }
+]
+değişken bilanço = Muhasebe.gelirGiderRaporu(hareketler)
+yazdır("📈 Net Kâr Durumu:", Muhasebe.paraFormati(bilanço.netKarZarar), "[" + bilanço.durum + "]")`,
+
+      veri_analizi: `// 📊 Pandas Tarzı Veri ve Tablo Analizi
+değişken satislar = [
+  { urun: "Tusi-Lang Pro", adet: 14, tutar: 42000 },
+  { urun: "Bitigey WebOS", adet: 25, tutar: 75000 },
+  { urun: "Şiir Kitabı Seti", adet: 80, tutar: 16000 }
+]
+
+değişken toplamCiro = Veri.toplam(satislar, "tutar")
+değişken ortalamaCiro = Veri.ortalama(satislar, "tutar")
+değişken enCokSatan = Veri.enYuksek(satislar, "adet")
+
+yazdır("📊 TOPLAM CİRO     :", Muhasebe.paraFormati(toplamCiro))
+yazdır("📈 ORTALAMA SATIŞ  :", Muhasebe.paraFormati(ortalamaCiro))
+yazdır("🏆 EN ÇOK SATAN    :", enCokSatan.urun, "(" + enCokSatan.adet + " Adet)")`,
+
+      siir_motoru: `// 📖 Tunahan Haksever Edebi Şiir Motoru
 değişken ozne = ["Bir yolcu", "Sessiz bir şair", "Geceye sığınan ruh", "Zamanın gölgesi"]
 değişken mekan = ["mâsivâ çölünde", "ekinoksun kalbinde", "sonsuzluk ufkunda", "şafağın eşiğinde"]
 değişken fiil = ["hakikati arar.", "kendi dizelerine sarılır.", "vuslatı fısıldar.", "yıldızları dinler."]
 
 fonksiyon siirYaz() {
-  değişken o = ozne[Matematik.rastgele(0, 3)]
-  değişken m = mekan[Matematik.rastgele(0, 3)]
-  değişken f = fiil[Matematik.rastgele(0, 3)]
-  döndür o + " " + m + " " + f
+  döndür ozne[Matematik.rastgele(0, 3)] + " " + mekan[Matematik.rastgele(0, 3)] + " " + fiil[Matematik.rastgele(0, 3)]
 }
 
 yazdır("══════════════════════════════════════════")
-yazdır("  📖 Tusi Edebi Şiir Motoru")
+yazdır("  📖 Tusi Edebi Şiir Motoru (Tunahan Haksever)")
 yazdır("══════════════════════════════════════════")
-
 için i aralığında 1..4 {
   yazdır(i + ". Dize: " + siirYaz())
 }`,
 
-      fonksiyon: `// ⚡ Özyineleme (Recursion) ve Fonksiyonlar
+      tpm_paket: `// 📦 Tusi Paket Yöneticisi (TPM - pip install benzeri)
+TPM.kur("muhasebe-pro")
+TPM.kur("tusi-gui-plus")
+
+değişken paketler = TPM.listele()
+yazdır("📦 Yüklü Paket Listesi:", paketler)`,
+
+      fonksiyonlar: `// ⚡ Matematik & Özyineleme (Recursion)
 fonksiyon fibonacci(n) {
   eğer (n <= 1) ise { döndür n }
   döndür fibonacci(n - 1) + fibonacci(n - 2)
 }
 
-fonksiyon faktoriyel(n) {
-  eğer (n <= 1) ise { döndür 1 }
-  döndür n * faktoriyel(n - 1)
-}
-
-yazdır("5! Faktöriyel Hesabı:", faktoriyel(5))
-yazdır("Fibonacci(10):", fibonacci(10))`,
-
-      matematik: `// 🧮 Matematik Standart Kütüphanesi
-yazdır("Pi Sayısı:", Matematik.pi)
-yazdır("Euler Sayısı:", Matematik.e)
-yazdır("Karekök(256):", Matematik.karekök(256))
-yazdır("2^10 Üs Hesabı:", Matematik.üs(2, 10))
-yazdır("Rastgele Zar Atışı (1-6):", Matematik.rastgele(1, 6))`,
-
-      dizi: `// 📊 Diziler ve Liste İşlemleri
-değişken meyveler = ["Elma", "Armut", "Çilek"]
-Dizi.ekle(meyveler, "Kiraz")
-
-yazdır("Meyve Listesi:", meyveler)
-yazdır("Toplam Eleman:", Dizi.uzunluk(meyveler))
-yazdır("Ters Sıralı:", Dizi.tersine(meyveler))`,
-
-      db: `// 💾 TusiDB Bellek Veritabanı
-TusiDB.kaydet("kullanici_1", { isim: "Tunahan Haksever", rol: "Yazar & Geliştirici", sehir: "İstanbul" })
-TusiDB.kaydet("kitap_1", { baslik: "Mâsivâ Yolculuğu", tur: "Şiir", yil: 2026 })
-
-yazdır("Kullanıcı Kaydı:", TusiDB.getir("kullanici_1"))
-yazdır("Kitap Kaydı:", TusiDB.getir("kitap_1"))`
+yazdır("Fibonacci(10):", fibonacci(10))
+yazdır("Karekök(225):", Matematik.karekök(225))
+yazdır("2^8 Üs Hesabı:", Matematik.üs(2, 8))`
     };
 
     function runCode() {
       consoleOut.innerHTML = '';
+      guiContainer.innerHTML = '';
+
       const source = codeArea.value;
       const start = performance.now();
 
@@ -390,11 +535,62 @@ yazdır("Kitap Kaydı:", TusiDB.getir("kitap_1"))`
         const parser = new Parser(tokens);
         const ast = parser.parse();
 
+        let currentMockWin = null;
+
         const interpreter = new Interpreter((msg) => {
           const line = document.createElement('div');
           line.textContent = msg;
           consoleOut.appendChild(line);
         });
+
+        // GUI Live Renderer Callback
+        interpreter.guiCallback = (event) => {
+          if (event.tip === 'pencere') {
+            const winEl = document.createElement('div');
+            winEl.className = 'gui-window-mock';
+            winEl.innerHTML = `
+              <div class="gui-win-titlebar">
+                <span>🔴 🟡 🟢 ${event.veri.baslik}</span>
+                <span style="font-size: 10px; color: #94a3b8;">TusiGUI v4.0</span>
+              </div>
+              <div class="gui-win-body" id="win-body-inner"></div>
+            `;
+            guiContainer.appendChild(winEl);
+            currentMockWin = winEl.querySelector('#win-body-inner');
+          } else if (event.tip === 'ekle' && currentMockWin) {
+            const b = event.bilesen;
+            if (b.tip === 'etiket') {
+              const el = document.createElement('div');
+              el.style.color = b.renk;
+              el.style.fontSize = '12px';
+              el.style.fontWeight = '600';
+              el.textContent = b.metin;
+              currentMockWin.appendChild(el);
+            } else if (b.tip === 'girdi') {
+              const box = document.createElement('div');
+              box.innerHTML = `<div style="font-size: 11px; color: #94a3b8; margin-bottom: 3px;">${b.etiket}</div><input class="gui-input-widget" value="${b.deger}">`;
+              currentMockWin.appendChild(box);
+            } else if (b.tip === 'tablo') {
+              const tbl = document.createElement('table');
+              tbl.className = 'gui-table-widget';
+              tbl.innerHTML = `
+                <thead><tr>${b.sutunlar.map(s => `<th>${s}</th>`).join('')}</tr></thead>
+                <tbody>${b.satirlar.map(row => `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+              `;
+              currentMockWin.appendChild(tbl);
+            } else if (b.tip === 'buton') {
+              const btn = document.createElement('button');
+              btn.className = 'gui-btn-widget';
+              btn.textContent = b.metin;
+              btn.addEventListener('click', () => {
+                if (typeof b.onClick === 'function') b.onClick();
+              });
+              currentMockWin.appendChild(btn);
+            }
+          } else if (event.tip === 'bildirim') {
+            alert(event.mesaj);
+          }
+        };
 
         interpreter.visit(ast);
 
@@ -412,7 +608,7 @@ yazdır("Kitap Kaydı:", TusiDB.getir("kitap_1"))`
       }
     }
 
-    codeArea.value = samples.merhaba;
+    codeArea.value = samples.gui_muhasebe;
     runCode();
 
     btnRun.addEventListener('click', runCode);

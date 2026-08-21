@@ -1,0 +1,33 @@
+// 🖥️ Tusi v4.0 — TusiGUI (PyQt6 / Tkinter Tarzı) Muhasebe Programı
+// Geliştirici: Tunahan Haksever
+
+// 1. Ana Pencereyi Oluştur
+Arayüz.pencereOlustur({
+  baslik: "Bitigey Muhasebe & Finans Yönetim Paneli",
+  genislik: 620,
+  yukseklik: 480
+})
+
+// 2. Başlık ve Girdi Alanları Ekle
+Arayüz.etiketEkle("🏢 Bitigey Ticari Muhasebe Takip Programı", "#00f0ff")
+
+değişken girdiMusteri = Arayüz.girdiAlaniEkle("Müşteri Ünvanı:", "Tunahan Haksever Edebiyat Yay.")
+değişken girdiTutar = Arayüz.girdiAlaniEkle("Fatura Tutarı (TL):", "15000")
+
+// 3. Tablo ve Finansal Döküm Ekle
+değişken sutunlar = ["İşlem Kodu", "Açıklama", "KDV Oranı", "Net Tutar"]
+değişken satirlar = [
+  ["ISL-101", "Web Yazılım Geliştirme", "%20", "18.000 TL"],
+  ["ISL-102", "Bitigey Edebiyat Yayını", "%10", "4.500 TL"],
+  ["ISL-103", "Sunucu & Veritabanı Bakım", "%20", "7.200 TL"]
+]
+
+Arayüz.tabloEkle(sutunlar, satirlar)
+
+// 4. Aksiyon Butonu
+Arayüz.butonEkle("💳 Faturayı Kes ve Sisteme Kaydet", fonksiyon() {
+  değişken kdv = Muhasebe.kdvHesapla(15000, 20)
+  Arayüz.bildirimGoster("Fatura kesildi! Toplam Tutar: " + Muhasebe.paraFormati(kdv.toplamTutar), "basarili")
+})
+
+Arayüz.etiketEkle("✓ TusiGUI v4.0 ile PyQt6 gücünde yerli masaüstü yazılımları geliştirin.", "#10b981")

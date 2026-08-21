@@ -1,15 +1,21 @@
-fonksiyon selamla(isim) {
-    yazdır("Merhaba " + isim + ", Tusi dünyasına hoş geldin!")
+// 🇹🇷 Tusi v4.0 — Fonksiyonlar & Özyineleme (Recursion)
+
+fonksiyon fibonacci(n) {
+  eğer (n <= 1) ise {
+    döndür n
+  }
+  döndür fibonacci(n - 1) + fibonacci(n - 2)
 }
 
-selamla("Tuna")
-
-fonksiyon kare_al(x) {
-    döndür x * x
+fonksiyon faktoriyel(n) {
+  eğer (n <= 1) ise {
+    döndür 1
+  }
+  döndür n * faktoriyel(n - 1)
 }
 
-değişken sonuc = kare_al(5)
-yazdır("5'in karesi: " + sonuc)
+yazdır("5! Faktöriyel Hesabı:", faktoriyel(5))
+yazdır("Fibonacci(10):", fibonacci(10))
 
-yazdır("Rastgele sayı (0-100): " + matematik_rastgele(100))
-yazdır("Simdi zaman: " + zaman_simdi())
+yazdır("Karekök(144):", Matematik.karekök(144))
+yazdır("2^8 Üs Hesabı:", Matematik.üs(2, 8))

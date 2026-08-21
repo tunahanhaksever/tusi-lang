@@ -1,292 +1,409 @@
-class BinOpNode {
-    constructor(left, op, right) {
-        this.left = left;
-        this.op = op;
-        this.right = right;
-    }
-}
+/**
+ * Tusi Programlama Dili — AST & Sözdizim Ayrıştırıcı (Parser v4.0)
+ * Geliştirici: Tunahan Haksever (bitigey.com)
+ */
 
-class NumberNode {
-    constructor(value) {
-        this.value = value;
-    }
-}
-
-class StringNode {
-    constructor(value) {
-        this.value = value;
-    }
-}
-
-class VarAssignNode {
-    constructor(name, value) {
-        this.name = name;
-        this.value = value;
-    }
-}
-
-class VarAccessNode {
-    constructor(name) {
-        this.name = name;
-    }
-}
-
-class PrintNode {
-    constructor(expression) {
-        this.expression = expression;
-    }
-}
-
-class IfNode {
-    constructor(condition, thenBlock, elseBlock = null) {
-        this.condition = condition;
-        this.thenBlock = thenBlock;
-        this.elseBlock = elseBlock;
-    }
-}
-
-class WhileNode {
-    constructor(condition, body) {
-        this.condition = condition;
-        this.body = body;
-    }
-}
-
-class FunctionDefNode {
-    constructor(name, params, body) {
-        this.name = name;
-        this.params = params;
-        this.body = body;
-    }
-}
-
-class FunctionCallNode {
-    constructor(name, args) {
-        this.name = name;
-        this.args = args;
-    }
-}
-
-class ReturnNode {
-    constructor(expression) {
-        this.expression = expression;
-    }
-}
-
-class ArrayNode {
-    constructor(elements) {
-        this.elements = elements;
-    }
-}
-
-class IndexNode {
-    constructor(left, index) {
-        this.left = left;
-        this.index = index;
-    }
-}
-
-class BlockNode {
-    constructor(statements) {
-        this.statements = statements;
-    }
+if (typeof require !== 'undefined') {
+  var { TokenType } = require('./lexer');
 }
 
 class Parser {
-    constructor(tokens) {
-        this.tokens = tokens;
-        this.pos = 0;
+  constructor(tokens) {
+    this.tokens = tokens || [];
+    this.pos = 0;
+  }
+
+  peek(offset = 0) {
+    return this.pos + offset < this.tokens.length ? this.tokens[this.pos + offset] : this.tokens[this.tokens.length - 1];
+  }
+
+  current() {
+    return this.peek();
+  }
+
+  isAtEnd() {
+    return this.current().type === TokenType.EOF;
+  }
+
+  advance() {
+    if (!this.isAtEnd()) this.pos++;
+    return this.tokens[this.pos - 1];
+  }
+
+  match(...types) {
+    for (const t of types) {
+      if (this.check(t)) {
+        this.advance();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  check(type) {
+    if (this.isAtEnd()) return false;
+    return this.current().type === type;
+  }
+
+  consume(type, message) {
+    if (this.check(type)) return this.advance();
+    const token = this.current();
+    throw new Error(`[Satır ${token.line}, Sütun ${token.col}] Sözdizim Hatası: ${message} (Bulunan: '${token.value || token.type}')`);
+  }
+
+  parse() {
+    const statements = [];
+    while (!this.isAtEnd()) {
+      // Ignore stray semicolons
+      if (this.match(TokenType.SEMICOLON)) continue;
+      const stmt = this.declaration();
+      if (stmt) statements.push(stmt);
+    }
+    return { type: 'Program', body: statements };
+  }
+
+  declaration() {
+    try {
+      if (this.match(TokenType.VAR)) return this.varDeclaration(false);
+      if (this.match(TokenType.CONST)) return this.varDeclaration(true);
+      if (this.match(TokenType.FUNCTION)) return this.functionDeclaration();
+      return this.statement();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  varDeclaration(isConst) {
+    const nameToken = this.consume(TokenType.IDENTIFIER, 'Değişken ismi bekleniyor.');
+    let init = null;
+    if (this.match(TokenType.ASSIGN)) {
+      init = this.expression();
+    }
+    this.match(TokenType.SEMICOLON);
+    return {
+      type: 'VariableDeclaration',
+      name: nameToken.value,
+      init,
+      isConst,
+      line: nameToken.line
+    };
+  }
+
+  functionDeclaration() {
+    const nameToken = this.consume(TokenType.IDENTIFIER, 'Fonksiyon ismi bekleniyor.');
+    this.consume(TokenType.LPAREN, "Fonksiyon parametreleri için '(' bekleniyor.");
+    const params = [];
+    if (!this.check(TokenType.RPAREN)) {
+      do {
+        params.push(this.consume(TokenType.IDENTIFIER, 'Parametre ismi bekleniyor.').value);
+      } while (this.match(TokenType.COMMA));
+    }
+    this.consume(TokenType.RPAREN, "Parametre listesinin sonunda ')' bekleniyor.");
+    this.consume(TokenType.LBRACE, "Fonksiyon gövdesi için '{' bekleniyor.");
+    const body = this.block();
+
+    return {
+      type: 'FunctionDeclaration',
+      name: nameToken.value,
+      params,
+      body,
+      line: nameToken.line
+    };
+  }
+
+  statement() {
+    if (this.match(TokenType.IF)) return this.ifStatement();
+    if (this.match(TokenType.WHILE)) return this.whileStatement();
+    if (this.match(TokenType.FOR)) return this.forStatement();
+    if (this.match(TokenType.RETURN)) return this.returnStatement();
+    if (this.match(TokenType.PRINT)) return this.printStatement();
+    if (this.match(TokenType.BREAK)) { this.match(TokenType.SEMICOLON); return { type: 'BreakStatement' }; }
+    if (this.match(TokenType.CONTINUE)) { this.match(TokenType.SEMICOLON); return { type: 'ContinueStatement' }; }
+    if (this.match(TokenType.LBRACE)) return { type: 'BlockStatement', body: this.block() };
+
+    return this.expressionStatement();
+  }
+
+  block() {
+    const statements = [];
+    while (!this.check(TokenType.RBRACE) && !this.isAtEnd()) {
+      if (this.match(TokenType.SEMICOLON)) continue;
+      statements.push(this.declaration());
+    }
+    this.consume(TokenType.RBRACE, "Blok sonunda '}' bekleniyor.");
+    return statements;
+  }
+
+  ifStatement() {
+    this.match(TokenType.LPAREN);
+    const test = this.expression();
+    this.match(TokenType.RPAREN);
+    this.match(TokenType.THEN); // optional 'ise'
+
+    let consequent;
+    if (this.match(TokenType.LBRACE)) {
+      consequent = { type: 'BlockStatement', body: this.block() };
+    } else {
+      consequent = this.statement();
     }
 
-    currentToken() {
-        return this.tokens[this.pos];
+    let alternate = null;
+    if (this.match(TokenType.ELSE)) {
+      if (this.match(TokenType.LBRACE)) {
+        alternate = { type: 'BlockStatement', body: this.block() };
+      } else {
+        alternate = this.statement();
+      }
     }
 
-    eat(tokenType) {
-        if (this.currentToken().type === tokenType) {
-            let token = this.currentToken();
-            this.pos++;
-            return token;
-        } else {
-            throw new Error(`Beklenen jeton ${tokenType}, ancak ${this.currentToken().type} bulundu.`);
+    return {
+      type: 'IfStatement',
+      test,
+      consequent,
+      alternate
+    };
+  }
+
+  whileStatement() {
+    this.match(TokenType.LPAREN);
+    const test = this.expression();
+    this.match(TokenType.RPAREN);
+    this.consume(TokenType.LBRACE, "Döngü gövdesi için '{' bekleniyor.");
+    const body = { type: 'BlockStatement', body: this.block() };
+    return { type: 'WhileStatement', test, body };
+  }
+
+  forStatement() {
+    // for i in array OR for i range 1..10
+    const varName = this.consume(TokenType.IDENTIFIER, "'için' döngüsünde değişken ismi bekleniyor.").value;
+    
+    if (this.match(TokenType.IN)) {
+      const right = this.expression();
+      this.consume(TokenType.LBRACE, "Döngü gövdesi için '{' bekleniyor.");
+      const body = { type: 'BlockStatement', body: this.block() };
+      return { type: 'ForInStatement', varName, right, body };
+    } else if (this.match(TokenType.RANGE)) {
+      const start = this.comparison();
+      this.consume(TokenType.RANGE_OP, "Aralık belirtimi için '..' bekleniyor.");
+      const end = this.comparison();
+      this.consume(TokenType.LBRACE, "Döngü gövdesi için '{' bekleniyor.");
+      const body = { type: 'BlockStatement', body: this.block() };
+      return { type: 'ForRangeStatement', varName, start, end, body };
+    } else {
+      throw new Error(`[Satır ${this.current().line}] 'için' sonrasında 'içinde' veya 'aralığında' bekleniyor.`);
+    }
+  }
+
+  returnStatement() {
+    let value = null;
+    if (!this.check(TokenType.SEMICOLON) && !this.check(TokenType.RBRACE)) {
+      value = this.expression();
+    }
+    this.match(TokenType.SEMICOLON);
+    return { type: 'ReturnStatement', value };
+  }
+
+  printStatement() {
+    this.consume(TokenType.LPAREN, "'yazdır' fonksiyonu için '(' bekleniyor.");
+    const args = [];
+    if (!this.check(TokenType.RPAREN)) {
+      do {
+        args.push(this.expression());
+      } while (this.match(TokenType.COMMA));
+    }
+    this.consume(TokenType.RPAREN, "'yazdır' kapanış parantezi ')' bekleniyor.");
+    this.match(TokenType.SEMICOLON);
+    return { type: 'PrintStatement', args };
+  }
+
+  expressionStatement() {
+    const expr = this.expression();
+    this.match(TokenType.SEMICOLON);
+    return { type: 'ExpressionStatement', expression: expr };
+  }
+
+  expression() {
+    return this.assignment();
+  }
+
+  assignment() {
+    const expr = this.logicalOr();
+
+    if (this.match(TokenType.ASSIGN, TokenType.PLUS_ASSIGN, TokenType.MINUS_ASSIGN, TokenType.MUL_ASSIGN, TokenType.DIV_ASSIGN)) {
+      const op = this.tokens[this.pos - 1].value;
+      const value = this.assignment();
+
+      if (expr.type === 'Identifier') {
+        return { type: 'AssignmentExpression', operator: op, left: expr, right: value };
+      } else if (expr.type === 'MemberExpression') {
+        return { type: 'MemberAssignmentExpression', operator: op, object: expr.object, property: expr.property, computed: expr.computed, right: value };
+      }
+      throw new Error(`Geçersiz atama hedefi.`);
+    }
+    return expr;
+  }
+
+  logicalOr() {
+    let left = this.logicalAnd();
+    while (this.match(TokenType.OR, TokenType.KW_OR)) {
+      const right = this.logicalAnd();
+      left = { type: 'LogicalExpression', operator: '||', left, right };
+    }
+    return left;
+  }
+
+  logicalAnd() {
+    let left = this.equality();
+    while (this.match(TokenType.AND, TokenType.KW_AND)) {
+      const right = this.equality();
+      left = { type: 'LogicalExpression', operator: '&&', left, right };
+    }
+    return left;
+  }
+
+  equality() {
+    let left = this.comparison();
+    while (this.match(TokenType.EQ, TokenType.NEQ)) {
+      const op = this.tokens[this.pos - 1].value;
+      const right = this.comparison();
+      left = { type: 'BinaryExpression', operator: op, left, right };
+    }
+    return left;
+  }
+
+  comparison() {
+    let left = this.term();
+    while (this.match(TokenType.LT, TokenType.GT, TokenType.LTE, TokenType.GTE)) {
+      const op = this.tokens[this.pos - 1].value;
+      const right = this.term();
+      left = { type: 'BinaryExpression', operator: op, left, right };
+    }
+    return left;
+  }
+
+  term() {
+    let left = this.factor();
+    while (this.match(TokenType.PLUS, TokenType.MINUS)) {
+      const op = this.tokens[this.pos - 1].value;
+      const right = this.factor();
+      left = { type: 'BinaryExpression', operator: op, left, right };
+    }
+    return left;
+  }
+
+  factor() {
+    let left = this.power();
+    while (this.match(TokenType.MUL, TokenType.DIV, TokenType.MOD)) {
+      const op = this.tokens[this.pos - 1].value;
+      const right = this.power();
+      left = { type: 'BinaryExpression', operator: op, left, right };
+    }
+    return left;
+  }
+
+  power() {
+    let left = this.unary();
+    while (this.match(TokenType.POW)) {
+      const right = this.unary();
+      left = { type: 'BinaryExpression', operator: '^', left, right };
+    }
+    return left;
+  }
+
+  unary() {
+    if (this.match(TokenType.NOT, TokenType.KW_NOT, TokenType.MINUS)) {
+      const op = this.tokens[this.pos - 1].value;
+      const right = this.unary();
+      return { type: 'UnaryExpression', operator: op, argument: right };
+    }
+    return this.callOrMember();
+  }
+
+  callOrMember() {
+    let expr = this.primary();
+
+    while (true) {
+      if (this.match(TokenType.LPAREN)) {
+        // Function Call
+        const args = [];
+        if (!this.check(TokenType.RPAREN)) {
+          do {
+            args.push(this.expression());
+          } while (this.match(TokenType.COMMA));
         }
+        this.consume(TokenType.RPAREN, "Çağrı kapanış parantezi ')' bekleniyor.");
+        expr = { type: 'CallExpression', callee: expr, arguments: args };
+      } else if (this.match(TokenType.DOT)) {
+        // Member Access obj.prop
+        const prop = this.consume(TokenType.IDENTIFIER, "Noktadan sonra özellik ismi bekleniyor.");
+        expr = { type: 'MemberExpression', object: expr, property: prop.value, computed: false };
+      } else if (this.match(TokenType.LBRACKET)) {
+        // Index Access arr[idx]
+        const prop = this.expression();
+        this.consume(TokenType.RBRACKET, "İndeks erişiminde ']' bekleniyor.");
+        expr = { type: 'MemberExpression', object: expr, property: prop, computed: true };
+      } else {
+        break;
+      }
+    }
+    return expr;
+  }
+
+  primary() {
+    const token = this.current();
+
+    if (this.match(TokenType.NUMBER)) return { type: 'Literal', value: token.value, raw: String(token.value) };
+    if (this.match(TokenType.STRING)) return { type: 'Literal', value: token.value, raw: `"${token.value}"` };
+    if (this.match(TokenType.BOOLEAN)) return { type: 'Literal', value: token.value, raw: String(token.value) };
+    if (this.match(TokenType.NULL)) return { type: 'Literal', value: null, raw: 'boş' };
+
+    if (this.match(TokenType.IDENTIFIER)) {
+      return { type: 'Identifier', name: token.value };
     }
 
-    parse() {
-        let statements = [];
-        while (this.currentToken().type !== 'EOF') {
-            statements.push(this.statement());
-        }
-        return new BlockNode(statements);
+    // Array Literal [1, 2, 3]
+    if (this.match(TokenType.LBRACKET)) {
+      const elements = [];
+      if (!this.check(TokenType.RBRACKET)) {
+        do {
+          elements.push(this.expression());
+        } while (this.match(TokenType.COMMA));
+      }
+      this.consume(TokenType.RBRACKET, "Dizi kapanışında ']' bekleniyor.");
+      return { type: 'ArrayLiteral', elements };
     }
 
-    statement() {
-        let token = this.currentToken();
-
-        if (token.type === 'KEYWORD') {
-            if (token.value === 'değişken') {
-                this.eat('KEYWORD');
-                let name = this.eat('IDENTIFIER').value;
-                this.eat('EQUALS');
-                let value = this.expression();
-                return new VarAssignNode(name, value);
-            } else if (token.value === 'yazdır') {
-                this.eat('KEYWORD');
-                this.eat('LPAREN');
-                let expr = this.expression();
-                this.eat('RPAREN');
-                return new PrintNode(expr);
-            } else if (token.value === 'eğer') {
-                this.eat('KEYWORD');
-                this.eat('LPAREN');
-                let condition = this.expression();
-                this.eat('RPAREN');
-                if (this.currentToken().type === 'KEYWORD' && this.currentToken().value === 'ise') {
-                    this.eat('KEYWORD');
-                }
-
-                let thenBlock = this.block();
-
-                let elseBlock = null;
-                if (this.currentToken().type === 'KEYWORD' && this.currentToken().value === 'değilse') {
-                    this.eat('KEYWORD');
-                    elseBlock = this.block();
-                }
-
-                return new IfNode(condition, thenBlock, elseBlock);
-            } else if (token.value === 'döngü') {
-                this.eat('KEYWORD');
-                this.eat('LPAREN');
-                let condition = this.expression();
-                this.eat('RPAREN');
-                let body = this.block();
-                return new WhileNode(condition, body);
-            } else if (token.value === 'fonksiyon') {
-                this.eat('KEYWORD');
-                let name = this.eat('IDENTIFIER').value;
-                this.eat('LPAREN');
-                let params = [];
-                if (this.currentToken().type !== 'RPAREN') {
-                    params.push(this.eat('IDENTIFIER').value);
-                    while (this.currentToken().type === 'COMMA') {
-                        this.eat('COMMA');
-                        params.push(this.eat('IDENTIFIER').value);
-                    }
-                }
-                this.eat('RPAREN');
-                let body = this.block();
-                return new FunctionDefNode(name, params, body);
-            } else if (token.value === 'döndür') {
-                this.eat('KEYWORD');
-                let expr = this.expression();
-                return new ReturnNode(expr);
-            }
-        }
-
-        if (token.type === 'IDENTIFIER' && this.peekToken() && this.peekToken().type === 'EQUALS') {
-            let name = this.eat('IDENTIFIER').value;
-            this.eat('EQUALS');
-            let value = this.expression();
-            return new VarAssignNode(name, value);
-        }
-
-        return this.expression();
+    // Object Literal { a: 1, b: 2 }
+    if (this.match(TokenType.LBRACE)) {
+      const properties = [];
+      if (!this.check(TokenType.RBRACE)) {
+        do {
+          let key;
+          if (this.check(TokenType.IDENTIFIER) || this.check(TokenType.STRING)) {
+            key = this.advance().value;
+          } else {
+            throw new Error(`[Satır ${this.current().line}] Nesne anahtar ismi bekleniyor.`);
+          }
+          this.consume(TokenType.COLON, "Nesne tanımında ':' bekleniyor.");
+          const val = this.expression();
+          properties.push({ key, value: val });
+        } while (this.match(TokenType.COMMA));
+      }
+      this.consume(TokenType.RBRACE, "Nesne kapanışında '}' bekleniyor.");
+      return { type: 'ObjectLiteral', properties };
     }
 
-    peekToken() {
-        if (this.pos + 1 < this.tokens.length) {
-            return this.tokens[this.pos + 1];
-        }
-        return null;
+    // Grouping (expr)
+    if (this.match(TokenType.LPAREN)) {
+      const expr = this.expression();
+      this.consume(TokenType.RPAREN, "Gruplama sonunda ')' bekleniyor.");
+      return expr;
     }
 
-    block() {
-        this.eat('LBRACE');
-        let statements = [];
-        while (this.currentToken().type !== 'RBRACE' && this.currentToken().type !== 'EOF') {
-            statements.push(this.statement());
-        }
-        this.eat('RBRACE');
-        return new BlockNode(statements);
-    }
-
-    expression() {
-        return this.binaryOp(this.term.bind(this), ['PLUS', 'MINUS', 'EQEQ', 'LESS', 'GREATER']);
-    }
-
-    term() {
-        return this.binaryOp(this.factor.bind(this), ['MUL', 'DIV']);
-    }
-
-    factor() {
-        let token = this.currentToken();
-        if (token.type === 'NUMBER') {
-            this.eat('NUMBER');
-            return new NumberNode(token.value);
-        } else if (token.type === 'STRING') {
-            this.eat('STRING');
-            return new StringNode(token.value);
-        } else if (token.type === 'IDENTIFIER') {
-            let name = this.eat('IDENTIFIER').value;
-            if (this.currentToken().type === 'LPAREN') {
-                this.eat('LPAREN');
-                let args = [];
-                if (this.currentToken().type !== 'RPAREN') {
-                    args.push(this.expression());
-                    while (this.currentToken().type === 'COMMA') {
-                        this.eat('COMMA');
-                        args.push(this.expression());
-                    }
-                }
-                this.eat('RPAREN');
-                return new FunctionCallNode(name, args);
-            } else if (this.currentToken().type === 'LBRACKET') {
-                this.eat('LBRACKET');
-                let index = this.expression();
-                this.eat('RBRACKET');
-                return new IndexNode(new VarAccessNode(name), index);
-            }
-            return new VarAccessNode(name);
-        } else if (token.type === 'LBRACKET') {
-            this.eat('LBRACKET');
-            let elements = [];
-            if (this.currentToken().type !== 'RBRACKET') {
-                elements.push(this.expression());
-                while (this.currentToken().type === 'COMMA') {
-                    this.eat('COMMA');
-                    elements.push(this.expression());
-                }
-            }
-            this.eat('RBRACKET');
-            return new ArrayNode(elements);
-        } else if (token.type === 'LPAREN') {
-            this.eat('LPAREN');
-            let expr = this.expression();
-            this.eat('RPAREN');
-            return expr;
-        } else if (token.type === 'KEYWORD') {
-            if (token.value === 'doğru') {
-                this.eat('KEYWORD');
-                return new NumberNode(true);
-            } else if (token.value === 'yanlış') {
-                this.eat('KEYWORD');
-                return new NumberNode(false);
-            }
-        }
-
-        throw new Error(`Sözdizimi hatası: ${JSON.stringify(token)}`);
-    }
-
-    binaryOp(func, ops) {
-        let left = func();
-        while (ops.includes(this.currentToken().type)) {
-            let op = this.currentToken();
-            this.eat(op.type);
-            let right = func();
-            left = new BinOpNode(left, op.type, right);
-        }
-        return left;
-    }
+    throw new Error(`[Satır ${token.line}, Sütun ${token.col}] Beklenmeyen ifade: '${token.value || token.type}'`);
+  }
 }
 
-module.exports = { Parser, BinOpNode, NumberNode, StringNode, VarAssignNode, VarAccessNode, PrintNode, IfNode, BlockNode };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { Parser };
+}

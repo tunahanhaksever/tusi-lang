@@ -1,0 +1,13 @@
+// 🇹🇷 Tusi v4.0 — Merhaba Türkiye Örneği
+// Geliştirici: Tunahan Haksever
+
+değişken selamlama = "🇹🇷 Merhaba Dünya! Türkiye'nin Yerli Programlama Dili Tusi Çalışıyor!"
+değişken sürüm = TUSI_SURUM
+değişken yazar = GELISTIRICI
+
+yazdır("==========================================")
+yazdır(selamlama)
+yazdır("Sürüm:", sürüm)
+yazdır("Geliştirici:", yazar)
+yazdır("Tarih:", Zaman.tarih())
+yazdır("==========================================")

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tusi Programlama Dili — Tunahan Haksever | Türkiye'nin Yerli Programlama Dili & Web Playground</title>
+  <meta name="description" content="Tunahan Haksever tarafından geliştirilen Tusi Programlama Dili; Türkçe sözdizimi, matematik kütüphanesi, algoritma desteği ve web playground ortamı sunan modern açık kaynaklı programlama dilidir.">
+  <meta name="keywords" content="Tunahan Haksever, Tunahan Haksever kimdir, Tusi, Tusi Programlama Dili, Tusi-Lang, Türkiye'nin Programlama Dili, Türkçe Kodlama, Bitigey, bitigey.com, Online Compiler, Web IDE">
+  <meta name="author" content="Tunahan Haksever">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://tunahanhaksever.github.io/tusi-lang/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://tunahanhaksever.github.io/tusi-lang/">
+  <meta property="og:title" content="Tusi Programlama Dili — Tunahan Haksever">
+  <meta property="og:description" content="Türkiye'nin yerli ve modern Türkçe programlama dili ekosistemi. Tarayıcında hemen dene!">
+  <meta property="og:site_name" content="Tusi-Lang">
+  <meta property="og:locale" content="tr_TR">
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://github.com/tunahanhaksever#person",
+        "name": "Tunahan Haksever",
+        "jobTitle": "Şair, Yazar, Dil Tasarımcısı & Yazılım Geliştirici",
+        "url": "https://github.com/tunahanhaksever",
+        "sameAs": ["https://github.com/tunahanhaksever", "https://bitigey.com"],
+        "description": "Tunahan Haksever, Tusi Programlama Dili'nin yaratıcısı, şair, yazar ve Bitigey.com kurucusudur."
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://tunahanhaksever.github.io/tusi-lang/#app",
+        "name": "Tusi Programlama Dili",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "All, Web, Node.js",
+        "author": {
+          "@id": "https://github.com/tunahanhaksever#person"
+        },
+        "description": "Tunahan Haksever tarafından geliştirilmiş, Türkçe sözdizimine sahip açık kaynaklı programlama dili ve çalışma ortamı."
+      }
+    ]
+  }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #080a14;
+      --bg-surface: #101426;
+      --bg-card: rgba(22, 28, 50, 0.7);
+      --border-glass: rgba(255, 255, 255, 0.1);
+      --accent-cyan: #00f0ff;
+      --accent-pink: #ff007f;
+      --accent-gold: #fbbf24;
+      --accent-green: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    header {
+      height: 64px;
+      background: rgba(16, 20, 38, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, #e11d48, #be123c);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .select-template {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-glass);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-run {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-pink));
+      color: #fff;
+      font-weight: 700;
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      box-shadow: 0 4px 15px rgba(0, 240, 255, 0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-run:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 0, 127, 0.5);
+    }
+
+    .main-workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      padding: 16px 24px;
+    }
+
+    .panel-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-glass);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .panel-header {
+      height: 40px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .editor-textarea {
+      flex: 1;
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 16px;
+      font-family: 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #38bdf8;
+      resize: none;
+      outline: none;
+      tab-size: 2;
+    }
+
+    .console-output {
+      flex: 1;
+      background: #050711;
+      padding: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #10b981;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .console-output .log-err {
+      color: #ff007f;
+    }
+
+    .console-output .log-info {
+      color: #94a3b8;
+    }
+
+    footer {
+      height: 46px;
+      background: rgba(16, 20, 38, 0.9);
+      border-top: 1px solid var(--border-glass);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--accent-cyan);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    @media (max-width: 860px) {
+      .main-workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-box">
+      <span class="brand-badge">🇹🇷 YERLİ DİL</span>
+      <h1 class="brand-title">Tusi Programlama Dili</h1>
+      <span style="font-size: 12px; color: var(--accent-gold); font-weight: 600;">v4.0 Ultra</span>
+    </div>
+
+    <div class="header-actions">
+      <select class="select-template" id="sample-picker">
+        <option value="merhaba">📌 1. Merhaba Dünya</option>
+        <option value="siir">📖 2. Algoritmik Şiir & Dize Motoru</option>
+        <option value="fonksiyon">⚡ 3. Fonksiyonlar & Fibonacci</option>
+        <option value="matematik">🧮 4. Matematik & İstatistik</option>
+        <option value="dizi">📊 5. Dizi ve Döngüler</option>
+        <option value="db">💾 6. TusiDB Veritabanı</option>
+      </select>
+
+      <button class="btn-run" id="btn-run-code">
+        <span>▶</span> Kodu Çalıştır (Ctrl+Enter)
+      </button>
+    </div>
+  </header>
+
+  <main class="main-workspace">
+    <!-- Code Editor Panel -->
+    <div class="panel-box">
+      <div class="panel-header">
+        <span>KAYNAK KOD (.tusi)</span>
+        <span>Türkçe Sözdizim Editörü</span>
+      </div>
+      <textarea class="editor-textarea" id="code-in" spellcheck="false" placeholder="Tusi kodunuzu buraya yazın..."></textarea>
+    </div>
+
+    <!-- Live Console Output Panel -->
+    <div class="panel-box">
+      <div class="panel-header">
+        <span>KONSOL ÇIKTISI (Canlı Yorumlayıcı)</span>
+        <button id="btn-clear-out" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; font-size: 11px;">Temizle</button>
+      </div>
+      <div class="console-output" id="console-out"></div>
+    </div>
+  </main>
+
+  <footer>
+    <div>
+      🇹🇷 <strong>Tusi Programlama Dili</strong> — Geliştirici: <a href="https://github.com/tunahanhaksever" target="_blank">Tunahan Haksever</a> (<a href="https://bitigey.com" target="_blank">bitigey.com</a>)
+    </div>
+    <div>
+      <span>Açık Kaynak • MIT Lisansı</span>
+    </div>
+  </footer>
+
+  <!-- Browser Bundle for Tusi Compiler -->
+  <script src="./lexer.js"></script>
+  <script src="./parser.js"></script>
+  <script src="./interpreter.js"></script>
+
+  <script>
+    const codeArea = document.getElementById('code-in');
+    const consoleOut = document.getElementById('console-out');
+    const btnRun = document.getElementById('btn-run-code');
+    const btnClear = document.getElementById('btn-clear-out');
+    const samplePicker = document.getElementById('sample-picker');
+
+    const samples = {
+      merhaba: `// 🇹🇷 Tusi v4.0 — Merhaba Türkiye!
+değişken selamlama = "Merhaba Dünya! Türkiye'nin Yerli Programlama Dili Tusi Çalışıyor!"
+değişken yazar = "Tunahan Haksever (Bitigey.com)"
+
+yazdır("==========================================")
+yazdır(selamlama)
+yazdır("Geliştirici:", yazar)
+yazdır("Tarih:", Zaman.tarih())
+yazdır("==========================================")`,
+
+      siir: `// 📖 Tunahan Haksever Şiir & Dize Motoru
+değişken ozne = ["Bir yolcu", "Sessiz bir şair", "Geceye sığınan ruh", "Zamanın gölgesi"]
+değişken mekan = ["mâsivâ çölünde", "ekinoksun kalbinde", "sonsuzluk ufkunda", "şafağın eşiğinde"]
+değişken fiil = ["hakikati arar.", "kendi dizelerine sarılır.", "vuslatı fısıldar.", "yıldızları dinler."]
+
+fonksiyon siirYaz() {
+  değişken o = ozne[Matematik.rastgele(0, 3)]
+  değişken m = mekan[Matematik.rastgele(0, 3)]
+  değişken f = fiil[Matematik.rastgele(0, 3)]
+  döndür o + " " + m + " " + f
+}
+
+yazdır("══════════════════════════════════════════")
+yazdır("  📖 Tusi Edebi Şiir Motoru")
+yazdır("══════════════════════════════════════════")
+
+için i aralığında 1..4 {
+  yazdır(i + ". Dize: " + siirYaz())
+}`,
+
+      fonksiyon: `// ⚡ Özyineleme (Recursion) ve Fonksiyonlar
+fonksiyon fibonacci(n) {
+  eğer (n <= 1) ise { döndür n }
+  döndür fibonacci(n - 1) + fibonacci(n - 2)
+}
+
+fonksiyon faktoriyel(n) {
+  eğer (n <= 1) ise { döndür 1 }
+  döndür n * faktoriyel(n - 1)
+}
+
+yazdır("5! Faktöriyel Hesabı:", faktoriyel(5))
+yazdır("Fibonacci(10):", fibonacci(10))`,
+
+      matematik: `// 🧮 Matematik Standart Kütüphanesi
+yazdır("Pi Sayısı:", Matematik.pi)
+yazdır("Euler Sayısı:", Matematik.e)
+yazdır("Karekök(256):", Matematik.karekök(256))
+yazdır("2^10 Üs Hesabı:", Matematik.üs(2, 10))
+yazdır("Rastgele Zar Atışı (1-6):", Matematik.rastgele(1, 6))`,
+
+      dizi: `// 📊 Diziler ve Liste İşlemleri
+değişken meyveler = ["Elma", "Armut", "Çilek"]
+Dizi.ekle(meyveler, "Kiraz")
+
+yazdır("Meyve Listesi:", meyveler)
+yazdır("Toplam Eleman:", Dizi.uzunluk(meyveler))
+yazdır("Ters Sıralı:", Dizi.tersine(meyveler))`,
+
+      db: `// 💾 TusiDB Bellek Veritabanı
+TusiDB.kaydet("kullanici_1", { isim: "Tunahan Haksever", rol: "Yazar & Geliştirici", sehir: "İstanbul" })
+TusiDB.kaydet("kitap_1", { baslik: "Mâsivâ Yolculuğu", tur: "Şiir", yil: 2026 })
+
+yazdır("Kullanıcı Kaydı:", TusiDB.getir("kullanici_1"))
+yazdır("Kitap Kaydı:", TusiDB.getir("kitap_1"))`
+    };
+
+    function runCode() {
+      consoleOut.innerHTML = '';
+      const source = codeArea.value;
+      const start = performance.now();
+
+      try {
+        const lexer = new Lexer(source);
+        const tokens = lexer.tokenize();
+
+        const parser = new Parser(tokens);
+        const ast = parser.parse();
+
+        const interpreter = new Interpreter((msg) => {
+          const line = document.createElement('div');
+          line.textContent = msg;
+          consoleOut.appendChild(line);
+        });
+
+        interpreter.visit(ast);
+
+        const duration = (performance.now() - start).toFixed(2);
+        const info = document.createElement('div');
+        info.className = 'log-info';
+        info.style.marginTop = '12px';
+        info.textContent = `\n✓ İşlem başarıyla tamamlandı (${duration} ms).`;
+        consoleOut.appendChild(info);
+      } catch (e) {
+        const err = document.createElement('div');
+        err.className = 'log-err';
+        err.textContent = `❌ [Tusi Hatası] ${e.message}`;
+        consoleOut.appendChild(err);
+      }
+    }
+
+    codeArea.value = samples.merhaba;
+    runCode();
+
+    btnRun.addEventListener('click', runCode);
+    btnClear.addEventListener('click', () => consoleOut.innerHTML = '');
+
+    samplePicker.addEventListener('change', (e) => {
+      codeArea.value = samples[e.target.value] || '';
+      runCode();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        runCode();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,270 +1,436 @@
-const http = require('http');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const { execSync } = require('child_process');
+/**
+ * Tusi Programlama Dili — Yorumlayıcı ve Standart Kütüphane (Interpreter v4.0)
+ * Geliştirici: Tunahan Haksever (bitigey.com)
+ */
 
-class ReturnValue {
-    constructor(value) {
-        this.value = value;
+class Environment {
+  constructor(parent = null) {
+    this.parent = parent;
+    this.values = new Map();
+    this.constants = new Set();
+  }
+
+  define(name, value, isConst = false) {
+    this.values.set(name, value);
+    if (isConst) this.constants.add(name);
+  }
+
+  assign(name, value) {
+    if (this.values.has(name)) {
+      if (this.constants.has(name)) {
+        throw new Error(`Hata: '${name}' bir sabittir (const), değeri değiştirilemez.`);
+      }
+      this.values.set(name, value);
+      return value;
     }
+    if (this.parent) return this.parent.assign(name, value);
+    throw new Error(`Hata: Tanımlanmamış değişken '${name}'`);
+  }
+
+  get(name) {
+    if (this.values.has(name)) return this.values.get(name);
+    if (this.parent) return this.parent.get(name);
+    throw new Error(`Hata: '${name}' adında bir değişken veya fonksiyon bulunamadı.`);
+  }
+
+  has(name) {
+    if (this.values.has(name)) return true;
+    return this.parent ? this.parent.has(name) : false;
+  }
 }
 
-class TusiFunction {
-    constructor(node, parentInterpreter) {
-        this.node = node;
-        this.parentInterpreter = parentInterpreter;
-    }
-
-    call(args) {
-        const interpreter = new Interpreter(this.parentInterpreter.globalVariables, this.parentInterpreter.variables);
-        
-        for (let i = 0; i < this.node.params.length; i++) {
-            interpreter.variables[this.node.params[i]] = args[i];
-        }
-
-        try {
-            return interpreter.visit(this.node.body);
-        } catch (e) {
-            if (e instanceof ReturnValue) {
-                return e.value;
-            }
-            throw e;
-        }
-    }
+class ReturnSignal {
+  constructor(value) {
+    this.value = value;
+  }
 }
+
+class BreakSignal {}
+class ContinueSignal {}
 
 class Interpreter {
-    constructor(globalVariables = {}, parentVariables = null) {
-        this.globalVariables = globalVariables;
-        this.variables = Object.create(parentVariables || globalVariables);
-        
-        if (Object.keys(this.globalVariables).length === 0 && !parentVariables) {
-            this.setupStdLib();
-        }
+  constructor(outputCallback = null) {
+    this.global = new Environment();
+    this.env = this.global;
+    this.outputCallback = outputCallback || console.log;
+
+    this.initStandardLibrary();
+  }
+
+  initStandardLibrary() {
+    // yazdır(...)
+    this.global.define('yazdır', (...args) => {
+      const output = args.map(a => this.formatValue(a)).join(' ');
+      this.outputCallback(output);
+      return output;
+    });
+
+    this.global.define('yaz', (...args) => this.global.get('yazdır')(...args));
+
+    // tür(...)
+    this.global.define('tür', (val) => {
+      if (val === null || val === undefined) return 'boş';
+      if (Array.isArray(val)) return 'dizi';
+      if (typeof val === 'number') return 'sayı';
+      if (typeof val === 'string') return 'metin';
+      if (typeof val === 'boolean') return 'mantıksal';
+      if (typeof val === 'function') return 'fonksiyon';
+      return 'nesne';
+    });
+
+    // uzunluk(...)
+    this.global.define('uzunluk', (val) => {
+      if (typeof val === 'string' || Array.isArray(val)) return val.length;
+      if (typeof val === 'object' && val !== null) return Object.keys(val).length;
+      return 0;
+    });
+
+    // Matematik Kütüphanesi
+    const Matematik = {
+      pi: Math.PI,
+      e: Math.E,
+      karekök: (n) => Math.sqrt(n),
+      karekok: (n) => Math.sqrt(n),
+      üs: (a, b) => Math.pow(a, b),
+      us: (a, b) => Math.pow(a, b),
+      mutlak: (n) => Math.abs(n),
+      yuvarla: (n) => Math.round(n),
+      taban: (n) => Math.floor(n),
+      tavan: (n) => Math.ceil(n),
+      sin: (n) => Math.sin(n),
+      cos: (n) => Math.cos(n),
+      tan: (n) => Math.tan(n),
+      rastgele: (min = 0, max = 1) => {
+        if (max === 1 && min === 0) return Math.random();
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      },
+      enBüyük: (...args) => Math.max(...args),
+      enKüçük: (...args) => Math.min(...args)
+    };
+    this.global.define('Matematik', Matematik, true);
+
+    // Metin Kütüphanesi
+    const Metin = {
+      büyükHarf: (str) => String(str).toLocaleUpperCase('tr-TR'),
+      buyukHarf: (str) => String(str).toLocaleUpperCase('tr-TR'),
+      küçükHarf: (str) => String(str).toLocaleLowerCase('tr-TR'),
+      kucukHarf: (str) => String(str).toLocaleLowerCase('tr-TR'),
+      böl: (str, sep = ' ') => String(str).split(sep),
+      bol: (str, sep = ' ') => String(str).split(sep),
+      birleştir: (arr, sep = '') => Array.isArray(arr) ? arr.join(sep) : String(arr),
+      içerir: (str, target) => String(str).includes(target),
+      icerir: (str, target) => String(str).includes(target),
+      değiştir: (str, from, to) => String(str).replaceAll(from, to),
+      kırp: (str) => String(str).trim()
+    };
+    this.global.define('Metin', Metin, true);
+
+    // Dizi Kütüphanesi
+    const Dizi = {
+      ekle: (arr, item) => { if (Array.isArray(arr)) arr.push(item); return arr; },
+      çıkar: (arr) => Array.isArray(arr) ? arr.pop() : null,
+      cikar: (arr) => Array.isArray(arr) ? arr.pop() : null,
+      uzunluk: (arr) => Array.isArray(arr) ? arr.length : 0,
+      tersine: (arr) => Array.isArray(arr) ? [...arr].reverse() : [],
+      sırala: (arr) => Array.isArray(arr) ? [...arr].sort() : []
+    };
+    this.global.define('Dizi', Dizi, true);
+
+    // Zaman Kütüphanesi
+    const Zaman = {
+      şimdi: () => Date.now(),
+      simdi: () => Date.now(),
+      tarih: () => new Date().toLocaleString('tr-TR')
+    };
+    this.global.define('Zaman', Zaman, true);
+
+    // TusiDB Dahili Bellek Veritabanı
+    const memoryDB = new Map();
+    const TusiDB = {
+      kaydet: (anahtar, veri) => { memoryDB.set(anahtar, veri); return true; },
+      getir: (anahtar) => memoryDB.get(anahtar) || null,
+      sil: (anahtar) => memoryDB.delete(anahtar),
+      tümü: () => Object.fromEntries(memoryDB)
+    };
+    this.global.define('TusiDB', TusiDB, true);
+
+    // Tusi Bilgileri
+    this.global.define('TUSI_SURUM', '4.0.0-Ultra', true);
+    this.global.define('GELISTIRICI', 'Tunahan Haksever', true);
+  }
+
+  formatValue(val) {
+    if (val === null || val === undefined) return 'boş';
+    if (typeof val === 'boolean') return val ? 'doğru' : 'yanlış';
+    if (Array.isArray(val)) return '[' + val.map(v => this.formatValue(v)).join(', ') + ']';
+    if (typeof val === 'object') {
+      try {
+        return JSON.stringify(val);
+      } catch(e) {
+        return '[Nesne]';
+      }
     }
+    return String(val);
+  }
 
-    setupStdLib() {
-        // Matematik
-        this.globalVariables['mat_sin'] = (args) => Math.sin(args[0]);
-        this.globalVariables['mat_cos'] = (args) => Math.cos(args[0]);
-        this.globalVariables['mat_kok'] = (args) => Math.sqrt(args[0]);
-        this.globalVariables['mat_rastgele'] = (args) => Math.random() * (args[0] || 1);
-        this.globalVariables['mat_mutlak'] = (args) => Math.abs(args[0]);
-        this.globalVariables['mat_yuvarla'] = (args) => Math.round(args[0]);
-        
-        // Dizi/Metin
-        this.globalVariables['uzunluk'] = (args) => args[0].length;
-        this.globalVariables['ekle'] = (args) => {
-            if (Array.isArray(args[0])) {
-                args[0].push(args[1]);
-                return args[0];
-            }
-            return args[0] + args[1];
-        };
-        
-        // Zaman
-        this.globalVariables['zaman_simdi'] = () => Date.now();
-        
-        // Sistem
-        this.globalVariables['tur_ne'] = (args) => typeof args[0];
-        this.globalVariables['sistem_bilgi'] = () => {
-            return {
-                platform: os.platform(),
-                islemci: os.arch(),
-                bellek_toplam: os.totalmem(),
-                bellek_bos: os.freemem(),
-                kullanici: os.userInfo().username
-            };
-        };
+  visit(node) {
+    if (!node) return null;
 
-        // --- HACK KORUMALI DOSYA SISTEMI ---
-        const safePath = (p) => {
-            const requested = path.resolve(p);
-            if (!requested.startsWith(process.cwd())) {
-                throw new Error("GÜVENLİK İHLALİ: Proje klasörü dışına çıkılamaz!");
-            }
-            return requested;
-        };
-
-        this.globalVariables['dosya_oku'] = (args) => fs.readFileSync(safePath(args[0]), 'utf8');
-        this.globalVariables['dosya_yaz'] = (args) => {
-            fs.writeFileSync(safePath(args[0]), args[1], 'utf8');
-            return true;
-        };
-
-        // --- VERİTABANI MOTORU (JSON TABANLI) ---
-        this.globalVariables['vt_kaydet'] = (args) => {
-            const dbPath = safePath(args[0] + ".json");
-            const data = args[1];
-            fs.writeFileSync(dbPath, JSON.stringify(data, null, 2));
-            return true;
-        };
-
-        this.globalVariables['vt_oku'] = (args) => {
-            const dbPath = safePath(args[0] + ".json");
-            if (!fs.existsSync(dbPath)) return null;
-            return JSON.parse(fs.readFileSync(dbPath, 'utf8'));
-        };
-
-        // --- DIŞ DÜNYA ENTEGRASYONU ---
-        this.globalVariables['dis_komut'] = (args) => {
-            try {
-                return execSync(args[0]).toString();
-            } catch (e) {
-                return "Hata: " + e.message;
-            }
-        };
-
-        // --- METİN ARAÇLARI ---
-        this.globalVariables['metin_buyut'] = (args) => String(args[0]).toLocaleUpperCase('tr-TR');
-        this.globalVariables['metin_kucult'] = (args) => String(args[0]).toLocaleLowerCase('tr-TR');
-        this.globalVariables['metin_parcala'] = (args) => String(args[0]).split(args[1]);
-
-        this.globalVariables['konsol_satir'] = () => {
-            return require('readline-sync').question('');
-        };
-
-        // --- WEB MOTORU (PROFESYONEL) ---
-        this.globalVariables['sunucu_baslat'] = (args) => {
-            const port = args[0];
-            const tusiHandler = args[1];
-
-            const server = http.createServer((req, res) => {
-                const istek = { yol: req.url, metot: req.method, basliklar: req.headers };
-                const yanit = {
-                    yaz: (text) => res.write(String(text)),
-                    bitir: () => res.end(),
-                    durum: (code) => { res.statusCode = code },
-                    html: (content) => {
-                        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-                        res.end(content);
-                    }
-                };
-                tusiHandler.call([istek, yanit]);
-            });
-
-            server.listen(port, () => console.log(`Tusi Web Sunucusu http://localhost:${port} adresinde hazır!`));
-        };
-
-        this.globalVariables['yanit_html'] = (args) => args[0].html(args[1]);
-        this.globalVariables['yanit_yaz'] = (args) => args[0].yaz(args[1]);
-        this.globalVariables['yanit_bitir'] = (args) => args[0].bitir();
-    }
-
-    visit(node) {
-        if (!node) return null;
-        const methodName = `visit${node.constructor.name}`;
-        if (this[methodName]) {
-            return this[methodName](node);
-        }
-        throw new Error(`Ziyaret yöntemi tanımlanmamış: ${node.constructor.name}`);
-    }
-
-    visitBlockNode(node) {
+    switch (node.type) {
+      case 'Program':
         let result = null;
-        for (let statement of node.statements) {
-            result = this.visit(statement);
+        for (const stmt of node.body) {
+          result = this.visit(stmt);
         }
         return result;
-    }
 
-    visitNumberNode(node) {
-        return node.value;
-    }
-
-    visitStringNode(node) {
-        return node.value;
-    }
-
-    visitBinOpNode(node) {
-        let left = this.visit(node.left);
-        let right = this.visit(node.right);
-
-        switch (node.op) {
-            case 'PLUS': return left + right;
-            case 'MINUS': return left - right;
-            case 'MUL': return left * right;
-            case 'DIV': return left / right;
-            case 'EQEQ': return left == right;
-            case 'LESS': return left < right;
-            case 'GREATER': return left > right;
-            default:
-                throw new Error(`Bilinmeyen operatör: ${node.op}`);
-        }
-    }
-
-    visitVarAssignNode(node) {
-        let val = this.visit(node.value);
-        this.variables[node.name] = val;
+      case 'VariableDeclaration': {
+        const val = node.init ? this.visit(node.init) : null;
+        this.env.define(node.name, val, node.isConst);
         return val;
-    }
+      }
 
-    visitVarAccessNode(node) {
-        if (node.name in this.variables) {
-            return this.variables[node.name];
-        } else {
-            throw new Error(`Tanımlanmamış değişken: ${node.name}`);
-        }
-    }
+      case 'FunctionDeclaration': {
+        const fn = (...args) => {
+          const fnEnv = new Environment(this.env);
+          node.params.forEach((param, idx) => {
+            fnEnv.define(param, args[idx] !== undefined ? args[idx] : null);
+          });
 
-    visitPrintNode(node) {
-        let val = this.visit(node.expression);
-        console.log(val);
-        return val;
-    }
+          const prevEnv = this.env;
+          this.env = fnEnv;
+          try {
+            for (const stmt of node.body) {
+              this.visit(stmt);
+            }
+          } catch (e) {
+            if (e instanceof ReturnSignal) {
+              this.env = prevEnv;
+              return e.value;
+            }
+            this.env = prevEnv;
+            throw e;
+          }
+          this.env = prevEnv;
+          return null;
+        };
 
-    visitIfNode(node) {
-        let condition = this.visit(node.condition);
-        if (condition) {
-            return this.visit(node.thenBlock);
-        } else if (node.elseBlock) {
-            return this.visit(node.elseBlock);
+        this.env.define(node.name, fn);
+        return fn;
+      }
+
+      case 'BlockStatement': {
+        const prevEnv = this.env;
+        this.env = new Environment(prevEnv);
+        try {
+          for (const stmt of node.body) {
+            this.visit(stmt);
+          }
+        } finally {
+          this.env = prevEnv;
         }
         return null;
-    }
+      }
 
-    visitWhileNode(node) {
-        let result = null;
-        while (this.visit(node.condition)) {
-            result = this.visit(node.body);
+      case 'IfStatement': {
+        const cond = this.visit(node.test);
+        if (this.isTruthy(cond)) {
+          return this.visit(node.consequent);
+        } else if (node.alternate) {
+          return this.visit(node.alternate);
         }
-        return result;
-    }
+        return null;
+      }
 
-    visitFunctionDefNode(node) {
-        const func = new TusiFunction(node, this);
-        this.variables[node.name] = func;
-        return func;
-    }
+      case 'WhileStatement': {
+        while (this.isTruthy(this.visit(node.test))) {
+          try {
+            this.visit(node.body);
+          } catch (e) {
+            if (e instanceof BreakSignal) break;
+            if (e instanceof ContinueSignal) continue;
+            throw e;
+          }
+        }
+        return null;
+      }
 
-    visitFunctionCallNode(node) {
-        const func = this.visitVarAccessNode({ name: node.name });
+      case 'ForInStatement': {
+        const collection = this.visit(node.right);
+        if (!Array.isArray(collection)) {
+          throw new Error(`Hata: 'için ... içinde' ifadesi bir dizi bekler.`);
+        }
+        for (const item of collection) {
+          const loopEnv = new Environment(this.env);
+          loopEnv.define(node.varName, item);
+          const prevEnv = this.env;
+          this.env = loopEnv;
+          try {
+            for (const stmt of node.body.body) {
+              this.visit(stmt);
+            }
+          } catch (e) {
+            if (e instanceof BreakSignal) { this.env = prevEnv; break; }
+            if (e instanceof ContinueSignal) { this.env = prevEnv; continue; }
+            this.env = prevEnv;
+            throw e;
+          }
+          this.env = prevEnv;
+        }
+        return null;
+      }
+
+      case 'ForRangeStatement': {
+        const start = this.visit(node.start);
+        const end = this.visit(node.end);
+        for (let i = start; i <= end; i++) {
+          const loopEnv = new Environment(this.env);
+          loopEnv.define(node.varName, i);
+          const prevEnv = this.env;
+          this.env = loopEnv;
+          try {
+            for (const stmt of node.body.body) {
+              this.visit(stmt);
+            }
+          } catch (e) {
+            if (e instanceof BreakSignal) { this.env = prevEnv; break; }
+            if (e instanceof ContinueSignal) { this.env = prevEnv; continue; }
+            this.env = prevEnv;
+            throw e;
+          }
+          this.env = prevEnv;
+        }
+        return null;
+      }
+
+      case 'ReturnStatement':
+        throw new ReturnSignal(node.value ? this.visit(node.value) : null);
+
+      case 'BreakStatement':
+        throw new BreakSignal();
+
+      case 'ContinueStatement':
+        throw new ContinueSignal();
+
+      case 'PrintStatement': {
         const args = node.args.map(arg => this.visit(arg));
+        const out = args.map(a => this.formatValue(a)).join(' ');
+        this.outputCallback(out);
+        return out;
+      }
 
-        if (typeof func === 'function') {
-            return func(args);
-        } else if (func instanceof TusiFunction) {
-            return func.call(args);
-        } else {
-            throw new Error(`${node.name} bir fonksiyon değil.`);
-        }
-    }
+      case 'ExpressionStatement':
+        return this.visit(node.expression);
 
-    visitReturnNode(node) {
-        const value = this.visit(node.expression);
-        throw new ReturnValue(value);
-    }
+      case 'AssignmentExpression': {
+        const rightVal = this.visit(node.right);
+        const name = node.left.name;
+        let finalVal = rightVal;
 
-    visitArrayNode(node) {
-        return node.elements.map(el => this.visit(el));
-    }
+        if (node.operator === '+=') finalVal = this.visit(node.left) + rightVal;
+        else if (node.operator === '-=') finalVal = this.visit(node.left) - rightVal;
+        else if (node.operator === '*=') finalVal = this.visit(node.left) * rightVal;
+        else if (node.operator === '/=') finalVal = this.visit(node.left) / rightVal;
 
-    visitIndexNode(node) {
+        return this.env.assign(name, finalVal);
+      }
+
+      case 'MemberAssignmentExpression': {
+        const obj = this.visit(node.object);
+        const prop = node.computed ? this.visit(node.property) : node.property;
+        const rightVal = this.visit(node.right);
+        if (obj === null || obj === undefined) throw new Error(`Hata: 'boş' üzerinde özellik atanamaz.`);
+        obj[prop] = rightVal;
+        return rightVal;
+      }
+
+      case 'BinaryExpression': {
         const left = this.visit(node.left);
-        const index = this.visit(node.index);
-        return left[index];
+        const right = this.visit(node.right);
+
+        switch (node.operator) {
+          case '+': return left + right;
+          case '-': return left - right;
+          case '*': return left * right;
+          case '/': return left / right;
+          case '%': return left % right;
+          case '^': return Math.pow(left, right);
+          case '==': return left === right;
+          case '!=': return left !== right;
+          case '<': return left < right;
+          case '>': return left > right;
+          case '<=': return left <= right;
+          case '>=': return left >= right;
+          default: throw new Error(`Bilinmeyen operatör: ${node.operator}`);
+        }
+      }
+
+      case 'LogicalExpression': {
+        const left = this.visit(node.left);
+        if (node.operator === '||') {
+          return this.isTruthy(left) ? left : this.visit(node.right);
+        }
+        if (node.operator === '&&') {
+          return !this.isTruthy(left) ? left : this.visit(node.right);
+        }
+        return null;
+      }
+
+      case 'UnaryExpression': {
+        const arg = this.visit(node.argument);
+        if (node.operator === '-' || node.operator === 'eksi') return -arg;
+        if (node.operator === '!' || node.operator === 'değil' || node.operator === 'degil') return !this.isTruthy(arg);
+        return arg;
+      }
+
+      case 'CallExpression': {
+        const fn = this.visit(node.callee);
+        const args = node.arguments.map(a => this.visit(a));
+        if (typeof fn !== 'function') {
+          throw new Error(`Hata: '${node.callee.name || 'ifade'}' bir fonksiyon değildir.`);
+        }
+        return fn(...args);
+      }
+
+      case 'MemberExpression': {
+        const obj = this.visit(node.object);
+        const prop = node.computed ? this.visit(node.property) : node.property;
+        if (obj === null || obj === undefined) throw new Error(`Hata: 'boş' üzerinde özellik okunamaz: '${prop}'`);
+        const val = obj[prop];
+        if (typeof val === 'function') {
+          return val.bind(obj);
+        }
+        return val;
+      }
+
+      case 'ArrayLiteral':
+        return node.elements.map(e => this.visit(e));
+
+      case 'ObjectLiteral': {
+        const obj = {};
+        for (const prop of node.properties) {
+          obj[prop.key] = this.visit(prop.value);
+        }
+        return obj;
+      }
+
+      case 'Identifier':
+        return this.env.get(node.name);
+
+      case 'Literal':
+        return node.value;
+
+      default:
+        throw new Error(`Bilinmeyen AST düğümü: ${node.type}`);
     }
+  }
+
+  isTruthy(val) {
+    if (val === false || val === null || val === undefined || val === 0 || val === '') return false;
+    return true;
+  }
 }
 
-module.exports = { Interpreter };
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { Interpreter, Environment };
+}

@@ -1,0 +1,23 @@
+// 🇹🇷 Tusi v4.0 — Şiir & Dize Üretici (Algoritmik Edebiyat)
+// Tunahan Haksever Şiir Ekolü
+
+değişken ozne = ["Bir yolcu", "Sessiz bir şair", "Geceye sığınan ruh", "Zamanın gölgesi"]
+değişken mekan = ["mâsivâ çölünde", "ekinoksun kalbinde", "sonsuzluk ufkunda", "şafağın eşiğinde"]
+değişken fiil = ["hakikati arar.", "kendi dizelerine sarılır.", "vuslatı fısıldar.", "yıldızları dinler."]
+
+fonksiyon siirYaz() {
+  değişken o = ozne[Matematik.rastgele(0, 3)]
+  değişken m = mekan[Matematik.rastgele(0, 3)]
+  değişken f = fiil[Matematik.rastgele(0, 3)]
+  
+  döndür o + " " + m + " " + f
+}
+
+yazdır("══════════════════════════════════════════")
+yazdır("  📖 Tusi Edebi Şiir Motoru (Tunahan Haksever)")
+yazdır("══════════════════════════════════════════")
+
+için i aralığında 1..4 {
+  yazdır(i + ". Dize: " + siirYaz())
+}
+yazdır("══════════════════════════════════════════")

@@ -8,6 +8,8 @@
 ![Package Manager](https://img.shields.io/badge/Paket_Y%C3%B6netimi-TPM_Hub-fbbf24?style=for-the-badge)
 ![Online Studio](https://img.shields.io/badge/Web_Studio-Canl%C4%B1-10b981?style=for-the-badge&logo=google-chrome&logoColor=white)
 
+**Diller / Languages / Sprachen:** **[🇹🇷 Türkçe](README.md)** • [🇬🇧 English](README.en.md) • [🇩🇪 Deutsch](README.de.md)
+
 **Tunahan Haksever tarafından geliştirilen; Türkçenin zengin matematiksel ve mantıksal yapısını dijital dünyaya taşıyan, bağımsız sözdizimine, TusiGUI görsel arayüz motoruna ve TPM paket yöneticisine sahip modern açık kaynak programlama dili.**
 
 [🌐 Web Studio & 3 Dilde Dokümantasyon](#-web-studio--canlı-laboratuvar) • [🖥️ TusiGUI Görsel Arayüz](#-1-tusigui-görsel-arayüz-motoru) • [💼 Ticari Muhasebe & E-Fatura](#-2-ticari-muhasebe-ve-finans-kütüphanesi) • [📦 TPM Paket Yöneticisi](#-3-tpm-tusi-paket-yöneticisi) • [Kurulum](#-kurulum)

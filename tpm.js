@@ -1,4 +1,4 @@
-1#!/usr/bin/env node
+#!/usr/bin/env node
 
 /**
  * TPM (Tusi Package Manager) — Pip & Npm Eşdeğeri Paket Yöneticisi (v4.0)

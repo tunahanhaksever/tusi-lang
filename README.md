@@ -1,25 +1,25 @@
-# 🇹🇷 Tusi Programlama Dili (v4.0 Ultra Core)
+# Tusi Programming System (v4.0 Ultra Core)
 
 <div align="center">
 
-![Tusi Lang Banner](https://img.shields.io/badge/Tusi_Language-v4.0.0-e11d48?style=for-the-badge&logo=codeforces&logoColor=white)
-![Author](https://img.shields.io/badge/Yarat%C4%B1c%C4%B1-Tunahan_Haksever-00f0ff?style=for-the-badge&logo=github&logoColor=white)
-![GUI Engine](https://img.shields.io/badge/G%C3%B6rsel_Aray%C3%BCz-TusiGUI_Engine-ff007f?style=for-the-badge)
+![Tusi Lang Banner](https://img.shields.io/badge/Tusi_System-v4.0.0-e11d48?style=for-the-badge&logo=codeforces&logoColor=white)
+![Author](https://img.shields.io/badge/Geli%C5%9Ftirici-Tunahan_Haksever-00f0ff?style=for-the-badge&logo=github&logoColor=white)
+![GUI Engine](https://img.shields.io/badge/Desktop_GUI-TusiGUI_Engine-ff007f?style=for-the-badge)
 ![Package Manager](https://img.shields.io/badge/Paket_Y%C3%B6netimi-TPM_Hub-fbbf24?style=for-the-badge)
 ![Online Studio](https://img.shields.io/badge/Web_Studio-Canl%C4%B1-10b981?style=for-the-badge&logo=google-chrome&logoColor=white)
 
 **Diller / Languages / Sprachen:** **[🇹🇷 Türkçe](README.md)** • [🇬🇧 English](README.en.md) • [🇩🇪 Deutsch](README.de.md)
 
-**Tunahan Haksever tarafından geliştirilen; Türkçenin zengin matematiksel ve mantıksal yapısını dijital dünyaya taşıyan, bağımsız sözdizimine, TusiGUI görsel arayüz motoruna ve TPM paket yöneticisine sahip modern açık kaynak programlama dili.**
+**Tunahan Haksever tarafından geliştirilen; yüksek okunabilirlik, yerel görsel arayüz desteği (TusiGUI), ticari otomasyon araçları ve yapay zeka entegrasyonu sunan bağımsız, modern ve çok yönlü programlama sistemi.**
 
-[🌐 Web Studio & 3 Dilde Dokümantasyon](#-web-studio--canlı-laboratuvar) • [🖥️ TusiGUI Görsel Arayüz](#-1-tusigui-görsel-arayüz-motoru) • [💼 Ticari Muhasebe & E-Fatura](#-2-ticari-muhasebe-ve-finans-kütüphanesi) • [📦 TPM Paket Yöneticisi](#-3-tpm-tusi-paket-yöneticisi) • [Kurulum](#-kurulum)
+[🌐 Web Studio & Dokümantasyon](#-web-studio--canlı-laboratuvar) • [🖥️ TusiGUI Görsel Arayüz](#-1-tusigui-görsel-arayüz-motoru) • [💼 Ticari Muhasebe & E-Fatura](#-2-ticari-muhasebe-ve-finans-kütüphanesi) • [📦 TPM Paket Yöneticisi](#-3-tpm-paket-yöneticisi) • [Kurulum](#-kurulum)
 
 </div>
 
 ---
 
 ## 🌐 Web Studio & Canlı Laboratuvar
-Herhangi bir kurulum yapmadan doğrudan web tarayıcınızda TusiGUI pencereleri tasarlayın, kod yazın ve **Türkçe, İngilizce ve Almanca (Deutsch)** dillerinde resmî dokümantasyonu inceleyin:  
+Herhangi bir yükleme yapmadan doğrudan web tarayıcınızda TusiGUI pencereleri tasarlayın, kod yazın ve dokümantasyonu inceleyin:  
 👉 **[https://tunahanhaksever.github.io/tusi-lang/](https://tunahanhaksever.github.io/tusi-lang/)**
 
 ---
@@ -98,32 +98,24 @@ yazdır("GENEL TOPLAM:", Muhasebe.paraFormati(fatura.genelToplam))
 
 ---
 
-### 📊 3. Veri ve Tablo Analizi (`Veri`)
+### 🧠 3. Yapay Zeka & Anlamsal Analiz (`YapayZeka`)
 
 ```tusi
-değişken satislar = [
-  { urun: "Tusi-Lang Pro", adet: 20, tutar: 60000 },
-  { urun: "Bitigey WebOS", adet: 35, tutar: 105000 }
-]
-
-değişken toplamCiro = Veri.toplam(satislar, "tutar")
-değişken enCokSatan = Veri.enYuksek(satislar, "adet")
-
-yazdır("Toplam Ciro:", Muhasebe.paraFormati(toplamCiro))
-yazdır("En Çok Satan:", enCokSatan.urun)
+değişken analiz = YapayZeka.duyguAnalizi("Bitigey ve Tusi ekosistemi harika bir gelişim gösteriyor.")
+yazdır("Duygu Skoru :", analiz.skor)
+yazdır("Sonuç       :", analiz.duygu)
 ```
 
 ---
 
-### 📦 4. TPM — Tusi Paket Yöneticisi
+### 📦 4. TPM — Paket Yöneticisi
 
-Topluluk kütüphanelerini tek satırla kurun:
+Modüler kütüphaneleri tek satırla kurun:
 
 ```bash
 # Paket Kurma
 tpm kur muhasebe-pro
 tpm kur tusi-gui-plus
-tpm kur yapay-zeka-tusi
 
 # Mevcut Paketleri Listeleme
 tpm listele

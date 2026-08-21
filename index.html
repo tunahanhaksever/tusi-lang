@@ -493,7 +493,7 @@
       <select class="lang-select" id="lang-select">
         <option value="tr">🇹🇷 Türkçe</option>
         <option value="en">🇬🇧 English</option>
-        <option value="az">🇦🇿 Azərbaycanca</option>
+        <option value="de">🇩🇪 Deutsch</option>
       </select>
     </div>
   </header>
@@ -811,68 +811,75 @@ tpm listele</div>
           `
         }
       },
-      az: {
+      de: {
         intro: {
-          title: "1. Giriş və Quraşdırma",
+          title: "1. Einführung und Installation",
           body: `
-            <p>Tusi, zəngin riyazi sintaksisə, daxili qrafik interfeys mühərrikinə (TusiGUI) və müstəqil paket menecerinə (TPM) malik müasir proqramlaşdırma dilidir.</p>
-            <h3>Quraşdırma:</h3>
+            <p>Tusi ist eine moderne, unabhängige Programmiersprache mit integrierter grafischer Benutzeroberfläche (TusiGUI), Modulen für kaufmännische Buchhaltung und einem eigenen Paketmanager (TPM).</p>
+            <h3>Globale Installation:</h3>
             <div class="code-block">npm install -g tusi-lang</div>
-            <h3>İcra Etmə:</h3>
-            <div class="code-block">tusi proqram.tusi</div>
+            <h3>Skripte ausführen:</h3>
+            <div class="code-block">tusi programm.tusi</div>
           `
         },
         syntax: {
-          title: "2. Əsas Sintaksis",
+          title: "2. Grundlegende Syntax",
           body: `
-            <div class="code-block">değişken ad = "Tunahan Haksevər"
+            <div class="code-block">değişken name = "Tunahan Haksever"
 sabit PI = 3.14159
 
-eğer (yas >= 18) ise {
-    yazdır("İstifadəçi yetkindir.")
+eğer (alter >= 18) ise {
+    yazdır("Volljährig.")
 } değilse {
-    yazdır("Gəncdir.")
+    yazdır("Minderjährig.")
 }</div>
           `
         },
         functions: {
-          title: "3. Funksiyalar",
+          title: "3. Funktionen und Rekursion",
           body: `
-            <div class="code-block">fonksiyon topla(a, b) {
+            <div class="code-block">fonksiyon add(a, b) {
     döndür a + b
+}
+
+fonksiyon fibonacci(n) {
+    eğer (n <= 1) ise { döndür n }
+    döndür fibonacci(n - 1) + fibonacci(n - 2)
 }</div>
           `
         },
         gui: {
-          title: "4. TusiGUI Qrafik İnterfeys",
+          title: "4. TusiGUI Grafische Oberfläche",
           body: `
-            <div class="code-block">Arayüz.pencereOlustur({ baslik: "İdarəetmə Paneli", genislik: 500, yukseklik: 400 })
-Arayüz.etiketEkle("Xoş Gəlmisiniz", "#00f0ff")
-Arayüz.butonEkle("Yadda Saxla", fonksiyon() {
-    Arayüz.bildirimGoster("Yadda saxlanıldı!", "basarili")
+            <div class="code-block">Arayüz.pencereOlustur({ baslik: "Verwaltungspanel", genislik: 500, yukseklik: 400 })
+Arayüz.etiketEkle("Willkommen bei TusiGUI", "#00f0ff")
+Arayüz.girdiAlaniEkle("Name:", "Tunahan")
+Arayüz.butonEkle("Speichern", fonksiyon() {
+    Arayüz.bildirimGoster("Erfolgreich gespeichert!", "basarili")
 })</div>
           `
         },
         accounting: {
-          title: "5. Mühasibat və Maliyyə",
+          title: "5. Buchhaltung und Finanzen",
           body: `
-            <div class="code-block">değişken qaimə = Muhasebe.faturaOlustur({
-    no: "Q-2026-001",
-    musteri: "Bitigey Qrup",
+            <div class="code-block">değişken rechnung = Muhasebe.faturaOlustur({
+    no: "RE-2026-001",
+    musteri: "Bitigey GmbH",
     kdvOrani: 20,
-    kalemler: [{ baslik: "Proqram Təminatı", adet: 1, fiyat: 30000 }]
-})</div>
+    kalemler: [{ baslik: "Software-Lizenz", adet: 1, fiyat: 35000 }]
+})
+yazdır("Gesamtsumme:", Muhasebe.paraFormati(rechnung.genelToplam))</div>
           `
         },
         data: {
-          title: "6. Məlumat Analizi",
+          title: "6. Datenanalyse und Tabellen",
           body: `
-            <div class="code-block">değişken satislar = [{ mehsul: "Tusi Pro", mebleg: 50000 }]
-yazdır("Cəmi:", Muhasebe.paraFormati(Veri.toplam(satislar, "mebleg")))</div>
+            <div class="code-block">değişken verkaufe = [{ produkt: "Tusi Pro", betrag: 60000 }]
+yazdır("Gesamtumsatz:", Muhasebe.paraFormati(Veri.toplam(verkaufe, "betrag")))</div>
           `
         },
         tpm: {
-          title: "7. TPM Paket Meneceri",
+          title: "7. TPM Paket-Ökosystem",
           body: `
             <div class="code-block">tpm kur muhasebe-pro
 tpm listele</div>

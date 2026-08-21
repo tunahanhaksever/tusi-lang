@@ -17,7 +17,7 @@
 ---
 
 ## 🌐 Web Studio & Canlı Laboratuvar
-Herhangi bir kurulum yapmadan doğrudan web tarayıcınızda TusiGUI pencereleri tasarlayın, kod yazın ve **Türkçe, İngilizce ve Azerbaycan Türkçesi** dillerinde resmî dokümantasyonu inceleyin:  
+Herhangi bir kurulum yapmadan doğrudan web tarayıcınızda TusiGUI pencereleri tasarlayın, kod yazın ve **Türkçe, İngilizce ve Almanca (Deutsch)** dillerinde resmî dokümantasyonu inceleyin:  
 👉 **[https://tunahanhaksever.github.io/tusi-lang/](https://tunahanhaksever.github.io/tusi-lang/)**
 
 ---

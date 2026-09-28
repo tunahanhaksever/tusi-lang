@@ -82,10 +82,10 @@ yazdır("Çıktı   :", cikti)
 ### 📋 5. JSON Dönüştürücü (`JSON`)
 JSON nesnelerini metne çevirme ve ayrıştırma:
 ```tusi
-değişken profil = { ad: "Tunahan", dil: "Tusi" }
+değişken profil = { ad: "Ahmet", dil: "Tusi" }
 değişken jsonMetni = JSON.uret(profil)
 değişken nesne = JSON.coz(jsonMetni)
-yazdır("Geliştirici:", nesne.ad)
+yazdır("Kullanıcı Adı:", nesne.ad)
 ```
 
 ### ⚡ 6. İleri Dizi İşlemleri (`Dizi`)
@@ -96,6 +96,36 @@ değişken tekil = Dizi.benzersiz(sayilar)
 değişken filtrelenmis = Dizi.filtrele(tekil, fonksiyon(x) { döndür x > 10 })
 değişken ikiKati = Dizi.haritala(filtrelenmis, fonksiyon(x) { döndür x * 2 })
 yazdır("İşlenmiş Veri:", ikiKati)
+```
+
+### 🏛️ 7. Nesne Yönelimli Programlama (OOP & Sınıflar)
+Tam sınıf, kurucu (`yapıcı`), örnekleme (`bu`) ve kalıtım (`miras` / `:`) mimarisi:
+```tusi
+sınıf Kisi {
+  yapıcı(ad, yas) {
+    bu.ad = ad
+    bu.yas = yas
+  }
+
+  tanit() {
+    döndür "Ad: " + bu.ad + ", Yaş: " + bu.yas
+  }
+}
+
+sınıf Calisan : Kisi {
+  yapıcı(ad, yas, departman) {
+    bu.ad = ad
+    bu.yas = yas
+    bu.departman = departman
+  }
+
+  bilgi() {
+    döndür bu.tanit() + " - Departman: " + bu.departman
+  }
+}
+
+değişken calisan1 = yeni Calisan("Ahmet", 28, "Yazılım")
+yazdır(calisan1.bilgi())
 ```
 
 ---

@@ -5,7 +5,7 @@
 yazdır("--- 1. JSON Nesne Üretimi ve Çözümlemesi ---")
 
 değişken profil = {
-  ad: "Tunahan",
+  ad: "Kullanıcı",
   rol: "Açık Kaynak Geliştirici",
   dil: "Tusi",
   surum: 5

@@ -67,10 +67,54 @@ class Parser {
       if (this.match(TokenType.VAR)) return this.varDeclaration(false);
       if (this.match(TokenType.CONST)) return this.varDeclaration(true);
       if (this.match(TokenType.FUNCTION)) return this.functionDeclaration();
+      if (this.match(TokenType.CLASS)) return this.classDeclaration();
       return this.statement();
     } catch (e) {
       throw e;
     }
+  }
+
+  classDeclaration() {
+    const nameToken = this.consume(TokenType.IDENTIFIER, 'Sınıf ismi bekleniyor.');
+    let superclass = null;
+    if (this.match(TokenType.COLON) || this.match(TokenType.EXTENDS)) {
+      superclass = this.consume(TokenType.IDENTIFIER, 'Miras alınacak sınıf ismi bekleniyor.').value;
+    }
+    this.consume(TokenType.LBRACE, "Sınıf gövdesi için '{' bekleniyor.");
+    const methods = [];
+    while (!this.check(TokenType.RBRACE) && !this.isAtEnd()) {
+      if (this.match(TokenType.SEMICOLON)) continue;
+      this.match(TokenType.FUNCTION);
+      const methodToken = this.advance();
+      if (!methodToken || (!methodToken.value && methodToken.type !== TokenType.IDENTIFIER)) {
+        throw new Error(`[Satır ${this.current().line}] Metot ismi bekleniyor.`);
+      }
+      const methodName = methodToken.value ?? methodToken.type;
+      this.consume(TokenType.LPAREN, "Metot parametreleri için '(' bekleniyor.");
+      const params = [];
+      if (!this.check(TokenType.RPAREN)) {
+        do {
+          params.push(this.consume(TokenType.IDENTIFIER, 'Parametre ismi bekleniyor.').value);
+        } while (this.match(TokenType.COMMA));
+      }
+      this.consume(TokenType.RPAREN, "Parametre listesinin sonunda ')' bekleniyor.");
+      this.consume(TokenType.LBRACE, "Metot gövdesi için '{' bekleniyor.");
+      const body = this.block();
+      methods.push({
+        type: 'MethodDefinition',
+        name: methodName,
+        params,
+        body
+      });
+    }
+    this.consume(TokenType.RBRACE, "Sınıf gövdesi sonunda '}' bekleniyor.");
+    return {
+      type: 'ClassDeclaration',
+      name: nameToken.value,
+      superclass,
+      methods,
+      line: nameToken.line
+    };
   }
 
   varDeclaration(isConst) {
@@ -374,6 +418,30 @@ class Parser {
     if (this.match(TokenType.STRING)) return { type: 'Literal', value: token.value, raw: `"${token.value}"` };
     if (this.match(TokenType.BOOLEAN)) return { type: 'Literal', value: token.value, raw: String(token.value) };
     if (this.match(TokenType.NULL)) return { type: 'Literal', value: null, raw: 'boş' };
+
+    if (this.match(TokenType.THIS)) {
+      return { type: 'ThisExpression', line: token.line };
+    }
+
+    if (this.match(TokenType.NEW)) {
+      const calleeToken = this.consume(TokenType.IDENTIFIER, "Yeni oluşturulacak sınıf ismi bekleniyor.");
+      const callee = { type: 'Identifier', name: calleeToken.value };
+      const args = [];
+      if (this.match(TokenType.LPAREN)) {
+        if (!this.check(TokenType.RPAREN)) {
+          do {
+            args.push(this.expression());
+          } while (this.match(TokenType.COMMA));
+        }
+        this.consume(TokenType.RPAREN, "Argüman listesi sonunda ')' bekleniyor.");
+      }
+      return {
+        type: 'NewExpression',
+        callee,
+        arguments: args,
+        line: calleeToken.line
+      };
+    }
 
     if (this.match(TokenType.IDENTIFIER)) {
       return { type: 'Identifier', name: token.value };

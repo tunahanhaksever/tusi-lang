@@ -33,6 +33,7 @@ const TokenType = {
   THIS: 'bu',
   NEW: 'yeni',
   IMPORT: 'dahil_et',
+  EXTENDS: 'miras',
 
   // Operators
   PLUS: '+',
@@ -127,7 +128,10 @@ const KEYWORDS = {
   'aktar': TokenType.IMPORT,
   'içe_aktar': TokenType.IMPORT,
   'ice_aktar': TokenType.IMPORT,
-  'import': TokenType.IMPORT
+  'import': TokenType.IMPORT,
+  'miras': TokenType.EXTENDS,
+  'miras_al': TokenType.EXTENDS,
+  'extends': TokenType.EXTENDS
 };
 
 class Token {

@@ -1,0 +1,43 @@
+# ===================================================
+# Tusi Programlama Dili - Nesne Yönelimli Programlama (OOP)
+# ===================================================
+
+sınıf Kisi {
+  yapıcı(ad, yas) {
+    bu.ad = ad
+    bu.yas = yas
+  }
+
+  tanit() {
+    döndür "Ben " + bu.ad + ", " + bu.yas + " yaşındayım."
+  }
+}
+
+sınıf Yazilimci : Kisi {
+  yapıcı(ad, yas, dil) {
+    bu.ad = ad
+    bu.yas = yas
+    bu.dil = dil
+  }
+
+  kodYaz() {
+    döndür bu.ad + " şu an " + bu.dil + " ile proje geliştiriyor!"
+  }
+
+  detay() {
+    döndür bu.tanit() + " Uzmanlık Alanı: " + bu.dil
+  }
+}
+
+yazdır("--- 1. Temel Sınıf ve Nesne Örneği ---")
+değişken kisi1 = yeni Kisi("Ahmet", 30)
+yazdır(kisi1.tanit())
+
+yazdır("\n--- 2. Kalıtım (Miras Alma) Örneği ---")
+değişken gelistirici = yeni Yazilimci("Ali", 24, "Tusi Lang")
+yazdır(gelistirici.detay())
+yazdır(gelistirici.kodYaz())
+
+yazdır("\n--- 3. Python Tarzı Doğrudan Çağrı ---")
+değişken gelistirici2 = Yazilimci("Pardus Gönüllüsü", 25, "Python & C++")
+yazdır(gelistirici2.detay())

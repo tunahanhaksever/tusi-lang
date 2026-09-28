@@ -11,7 +11,7 @@ Arayüz.pencereOlustur({
 // 2. Başlık ve Girdi Alanları Ekle
 Arayüz.etiketEkle("🏢 Bitigey Ticari Muhasebe Takip Programı", "#00f0ff")
 
-değişken girdiMusteri = Arayüz.girdiAlaniEkle("Müşteri Ünvanı:", "Tunahan Haksever Edebiyat Yay.")
+değişken girdiMusteri = Arayüz.girdiAlaniEkle("Müşteri Ünvanı:", "Örnek Teknoloji Ltd. Şti.")
 değişken girdiTutar = Arayüz.girdiAlaniEkle("Fatura Tutarı (TL):", "15000")
 
 // 3. Tablo ve Finansal Döküm Ekle

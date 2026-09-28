@@ -700,6 +700,76 @@ class Interpreter {
         return fn;
       }
 
+      case 'ClassDeclaration': {
+        const closureEnv = this.env;
+        let superclassFn = null;
+        if (node.superclass) {
+          superclassFn = this.env.get(node.superclass);
+          if (typeof superclassFn !== 'function') {
+            throw new Error(`[Satır ${node.line}] Miras alınacak sınıf bulunamadı: '${node.superclass}'`);
+          }
+        }
+
+        const methodsMap = {};
+        if (superclassFn && superclassFn.__methods__) {
+          Object.assign(methodsMap, superclassFn.__methods__);
+        }
+        for (const m of node.methods) {
+          methodsMap[m.name] = m;
+        }
+
+        const ClassConstructor = (...ctorArgs) => {
+          const instance = {};
+          instance.__class__ = node.name;
+
+          // Tüm metotları bağla
+          for (const [methodName, methodDef] of Object.entries(methodsMap)) {
+            instance[methodName] = (...methodArgs) => {
+              const methodEnv = new Environment(closureEnv);
+              methodEnv.define('bu', instance);
+              methodEnv.define('this', instance);
+              methodDef.params.forEach((param, idx) => {
+                methodEnv.define(param, methodArgs[idx] !== undefined ? methodArgs[idx] : null);
+              });
+
+              const prevEnv = this.env;
+              this.env = methodEnv;
+              try {
+                for (const stmt of methodDef.body) {
+                  this.visit(stmt);
+                }
+              } catch (e) {
+                if (e instanceof ReturnSignal) {
+                  this.env = prevEnv;
+                  return e.value;
+                }
+                this.env = prevEnv;
+                throw e;
+              }
+              this.env = prevEnv;
+              return null;
+            };
+          }
+
+          // Kurucu metot: yapıcı / yapici / kurucu / constructor / init / node.name
+          const ctorName = ['yapıcı', 'yapici', 'kurucu', 'constructor', 'init', node.name].find(
+            name => typeof instance[name] === 'function'
+          );
+          if (ctorName) {
+            instance[ctorName](...ctorArgs);
+          }
+
+          return instance;
+        };
+
+        ClassConstructor.__methods__ = methodsMap;
+        ClassConstructor.__isClass__ = true;
+        ClassConstructor.className = node.name;
+
+        this.env.define(node.name, ClassConstructor);
+        return ClassConstructor;
+      }
+
       case 'BlockStatement': {
         const prevEnv = this.env;
         this.env = new Environment(prevEnv);
@@ -893,6 +963,18 @@ class Interpreter {
           obj[prop.key] = this.visit(prop.value);
         }
         return obj;
+      }
+
+      case 'ThisExpression':
+        return this.env.get('bu');
+
+      case 'NewExpression': {
+        const ctor = this.visit(node.callee);
+        if (typeof ctor !== 'function') {
+          throw new Error(`[Satır ${node.line || 1}] Hata: '${node.callee.name || 'ifade'}' bir sınıf veya kurucu değildir.`);
+        }
+        const args = (node.arguments || []).map(a => this.visit(a));
+        return ctor(...args);
       }
 
       case 'Identifier':

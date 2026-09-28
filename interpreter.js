@@ -534,6 +534,76 @@ class Interpreter {
     };
     this.global.define('Rastgele', Rastgele, true);
 
+    // 🌐 12. Web ve HTTP Sunucu Motoru (Sunucu / Web)
+    const Sunucu = {
+      baslat: (port = 8080, istekIsleyici) => {
+        if (typeof require !== 'undefined') {
+          const http = require('http');
+          const server = http.createServer((req, res) => {
+            const istekNesnesi = {
+              yol: req.url,
+              metod: req.method,
+              basliklar: req.headers
+            };
+            const yanitNesnesi = {
+              _res: res,
+              yaz: (icerik) => res.write(String(icerik)),
+              bitir: (icerik = '') => {
+                if (icerik) res.write(String(icerik));
+                res.end();
+              },
+              json: (veri) => {
+                res.setHeader('Content-Type', 'application/json; charset=utf-8');
+                res.end(JSON.stringify(veri));
+              },
+              durum: (kod) => {
+                res.statusCode = kod;
+                return yanitNesnesi;
+              },
+              baslikEkle: (ad, deger) => {
+                res.setHeader(ad, deger);
+                return yanitNesnesi;
+              }
+            };
+            if (typeof istekIsleyici === 'function') {
+              try {
+                istekIsleyici(istekNesnesi, yanitNesnesi);
+              } catch (err) {
+                console.error('[Web Sunucu Hatası]', err);
+                if (!res.headersSent) {
+                  res.statusCode = 500;
+                  res.end('500 - Tusi Sunucu Hatasi');
+                }
+              }
+            }
+          });
+          server.listen(port, () => {
+            this.global.get('yazdır')(`🚀 Tusi Web Sunucusu yayında: http://localhost:${port}/`);
+          });
+          return server;
+        }
+        throw new Error('Web sunucusu sistem ortamında çalışır.');
+      }
+    };
+    this.global.define('Sunucu', Sunucu, true);
+    this.global.define('Web', Sunucu, true);
+
+    // Kılavuz ve site.tusi ile geriye uyumlu global web fonksiyonları
+    this.global.define('sunucu_baslat', (port, handler) => Sunucu.baslat(port, handler));
+    this.global.define('yanit_yaz', (yanit, metin) => {
+      if (yanit && typeof yanit.yaz === 'function') yanit.yaz(metin);
+    });
+    this.global.define('yanit_bitir', (yanit, metin = '') => {
+      if (yanit && typeof yanit.bitir === 'function') yanit.bitir(metin);
+    });
+    this.global.define('zaman_simdi', () => new Date().toLocaleString('tr-TR'));
+    this.global.define('sistem_bilgi', () => ({
+      kullanici: typeof process !== 'undefined' ? (process.env.USERNAME || process.env.USER || 'kullanici') : 'web',
+      isletimSistemi: typeof process !== 'undefined' ? process.platform : 'web'
+    }));
+    this.global.define('dosya_oku', (yol) => this.global.get('Dosya').oku(yol));
+    this.global.define('dosya_yaz', (yol, icerik) => this.global.get('Dosya').yaz(yol, icerik));
+
     // Tusi Bilgileri
     this.global.define('TUSI_SURUM', '5.0.0', true);
     this.global.define('GELISTIRICI', 'Tunahan Haksever', true);

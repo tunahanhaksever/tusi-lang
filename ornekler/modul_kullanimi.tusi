@@ -1,0 +1,20 @@
+# ==========================================
+# Tusi Programlama Dili - Modül Sistemi Örneği
+# ==========================================
+
+# Harici modülü projeye dahil ediyoruz
+dahil_et "ornekler/modul_matematik.tusi"
+
+yazdır("--- Tusi Modül Sistemi Devrede ---")
+
+değişken sonuc1 = topla(45, 55)
+yazdır("Toplama Sonucu: " + sonuc1)
+
+değişken sonuc2 = carp(12, 8)
+yazdır("Çarpma Sonucu: " + sonuc2)
+
+değişken sonuc3 = kareAl(9)
+yazdır("Kare Alma Sonucu: " + sonuc3)
+
+değişken sonuc4 = faktoriyel(5)
+yazdır("Faktöriyel Sonucu: " + sonuc4)

@@ -81,17 +81,35 @@ yazdır(uzunluk(diller)) // 3
 
 ---
 
-## 4. BÖLÜM: STANDART KÜTÜPHANE (PRO KOMUTLAR)
+## 4. BÖLÜM: STANDART KÜTÜPHANE VE MODÜL SİSTEMİ (v5.0)
 
-| Komut | Açıklama |
-| :--- | :--- |
-| `mat_kok(x)` | x'in karekökünü alır. |
-| `mat_rastgele(n)` | 0 ile n arası rastgele sayı. |
-| `sistem_bilgi()` | Bilgisayar özelliklerini getirir. |
-| `zaman_simdi()` | Zaman damgası verir. |
-| `dosya_oku(yol)` | Dosyanın içeriğini okur. |
-| `dosya_yaz(yol, icerik)` | Dosyaya veri kaydeder. |
-| `konsol_satir()` | Kullanıcıdan klavye girdisi bekler. |
+### 4.1 Modül Dahil Etme
+```tusi
+dahil_et "ornekler/modul_matematik.tusi"
+```
+
+### 4.2 Çekirdek Nesneler ve Metotlar
+
+| Kütüphane / Nesne | Metot | Açıklama |
+| :--- | :--- | :--- |
+| `Dosya` | `Dosya.oku(yol)` | Dosyanın tüm içeriğini metin olarak okur. |
+| `Dosya` | `Dosya.yaz(yol, icerik)` | Belirtilen dosyaya veri yazar (üzerine yazar). |
+| `Dosya` | `Dosya.ekle(yol, icerik)` | Dosyanın sonuna yeni veri ekler. |
+| `Dosya` | `Dosya.satirlar(yol)` | Dosyayı dizi biçiminde satır satır okur. |
+| `Dosya` | `Dosya.var_mi(yol)` | Dosyanın diskte bulunup bulunmadığını doğrular. |
+| `Dosya` | `Dosya.sil(yol)` | Dosyayı siler. |
+| `Ag` / `Ağ` | `Ag.getir(url)` | HTTP GET isteği yapar, JSON yanıtları otomatik ayrıştırır. |
+| `Ag` / `Ağ` | `Ag.gonder(url, veri)` | HTTP POST isteği gönderir. |
+| `Sistem` | `Sistem.calistir(komut)` | Kabuk komutunu çalıştırır ve çıktısını döndürür. |
+| `Sistem` | `Sistem.platform` | Çalışılan işletim sistemini verir (`win32`, `linux`, vb.). |
+| `Sistem` | `Sistem.dizin()` | Mevcut çalışma dizinini döndürür. |
+| `JSON` | `JSON.coz(metin)` | JSON metnini Tusi veri nesnesine çevirir. |
+| `JSON` | `JSON.uret(nesne)` | Nesneyi biçimlendirilmiş JSON metnine dönüştürür. |
+| `Dizi` | `Dizi.filtrele(dizi, fn)` | Dizi elemanlarını koşula göre süzer. |
+| `Dizi` | `Dizi.haritala(dizi, fn)` | Dizi elemanlarını fonksiyondan geçirerek dönüştürür. |
+| `Dizi` | `Dizi.toplam(dizi)` | Sayısal dizi elemanlarının toplamını hesaplar. |
+| `Dizi` | `Dizi.benzersiz(dizi)` | Tekrarlayan elemanları ayıklayarak tekil liste döndürür. |
+| `Rastgele` | `Rastgele.sayi(min, max)` | Belirtilen aralıkta rastgele tam sayı üretir. |
 
 ---
 

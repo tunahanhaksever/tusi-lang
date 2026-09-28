@@ -112,6 +112,7 @@ class Parser {
   }
 
   statement() {
+    if (this.match(TokenType.IMPORT)) return this.importStatement();
     if (this.match(TokenType.IF)) return this.ifStatement();
     if (this.match(TokenType.WHILE)) return this.whileStatement();
     if (this.match(TokenType.FOR)) return this.forStatement();
@@ -122,6 +123,18 @@ class Parser {
     if (this.match(TokenType.LBRACE)) return { type: 'BlockStatement', body: this.block() };
 
     return this.expressionStatement();
+  }
+
+  importStatement() {
+    const hasParen = this.match(TokenType.LPAREN);
+    const pathToken = this.consume(TokenType.STRING, "İçe aktarılacak dosya yolu metin ('...') olarak bekleniyor.");
+    if (hasParen) this.consume(TokenType.RPAREN, "Parantez kapatılmalı ')'");
+    this.match(TokenType.SEMICOLON);
+    return {
+      type: 'ImportStatement',
+      path: pathToken.value,
+      line: pathToken.line
+    };
   }
 
   block() {
@@ -335,8 +348,13 @@ class Parser {
         expr = { type: 'CallExpression', callee: expr, arguments: args };
       } else if (this.match(TokenType.DOT)) {
         // Member Access obj.prop
-        const prop = this.consume(TokenType.IDENTIFIER, "Noktadan sonra özellik ismi bekleniyor.");
-        expr = { type: 'MemberExpression', object: expr, property: prop.value, computed: false };
+        const next = this.current();
+        if (next && next.type !== TokenType.EOF && (next.type === TokenType.IDENTIFIER || typeof next.value === 'string')) {
+          this.advance();
+          expr = { type: 'MemberExpression', object: expr, property: next.value, computed: false };
+        } else {
+          this.consume(TokenType.IDENTIFIER, "Noktadan sonra özellik ismi bekleniyor.");
+        }
       } else if (this.match(TokenType.LBRACKET)) {
         // Index Access arr[idx]
         const prop = this.expression();

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Tusi Programlama Dili — CLI & Çalıştırıcı (v4.0)
+ * Tusi Programlama Dili — CLI & Çalıştırıcı (v5.0)
  * Geliştirici: Tunahan Haksever (bitigey.com)
  */
 
@@ -34,7 +34,7 @@ function execute(source, interpreter, printAST = false) {
 
 function startREPL() {
   console.log('\x1b[36m%s\x1b[0m', '═══════════════════════════════════════════════════════');
-  console.log('\x1b[1m\x1b[33m  🇹🇷 TUSİ PROGRAMLAMA DİLİ v4.0.0 (Ultra Core)\x1b[0m');
+  console.log('\x1b[1m\x1b[33m  🇹🇷 TUSİ PROGRAMLAMA DİLİ v5.0.0 (Core Engine)\x1b[0m');
   console.log('  Geliştirici: \x1b[35mTunahan Haksever\x1b[0m (bitigey.com)');
   console.log('  Çıkış için "çıkış" veya Ctrl+C | Yardım için "yardım"');
   console.log('\x1b[36m%s\x1b[0m', '═══════════════════════════════════════════════════════\n');

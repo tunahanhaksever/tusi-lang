@@ -1,0 +1,26 @@
+# ==========================================
+# Tusi Programlama Dili - Dosya İşlemleri Örneği
+# ==========================================
+
+değişken dosyaAdi = "ornek_kayit.txt"
+
+yazdır("1. Dosya oluşturuluyor ve yazılıyor...")
+Dosya.yaz(dosyaAdi, "Pardus ve Tusi Birlikte Güçlü\nİkinci Satır Verisi\nÜçüncü Satır Verisi")
+
+eğer (Dosya.var_mi(dosyaAdi)) {
+  yazdır("2. Dosya başarıyla doğrulandı: " + dosyaAdi)
+}
+
+yazdır("3. Dosya içeriği tam metin olarak okunuyor:")
+değişken icerik = Dosya.oku(dosyaAdi)
+yazdır(icerik)
+
+yazdır("4. Dosya satır satır okunuyor:")
+değişken satirlar = Dosya.satirlar(dosyaAdi)
+için satir içinde satirlar {
+  yazdır(" -> " + satir)
+}
+
+yazdır("5. Temizlik yapılıyor...")
+Dosya.sil(dosyaAdi)
+yazdır("Tamamlandı.")

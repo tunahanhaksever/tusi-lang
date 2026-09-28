@@ -85,6 +85,11 @@ class Interpreter {
       return 0;
     });
 
+    // Tip Dönüştürücüler
+    this.global.define('metin', (val) => this.formatValue(val));
+    this.global.define('sayi', (val) => Number(val));
+    this.global.define('sayı', (val) => Number(val));
+
     // Matematik Kütüphanesi
     const Matematik = {
       pi: Math.PI,
@@ -121,7 +126,9 @@ class Interpreter {
       içerir: (str, target) => String(str).includes(target),
       icerir: (str, target) => String(str).includes(target),
       değiştir: (str, from, to) => String(str).replaceAll(from, to),
-      kırp: (str) => String(str).trim()
+      kırp: (str) => String(str).trim(),
+      donustur: (val) => this.formatValue(val),
+      dönüştür: (val) => this.formatValue(val)
     };
     this.global.define('Metin', Metin, true);
 
@@ -132,9 +139,24 @@ class Interpreter {
       cikar: (arr) => Array.isArray(arr) ? arr.pop() : null,
       uzunluk: (arr) => Array.isArray(arr) ? arr.length : 0,
       tersine: (arr) => Array.isArray(arr) ? [...arr].reverse() : [],
-      sırala: (arr) => Array.isArray(arr) ? [...arr].sort() : []
+      sırala: (arr) => Array.isArray(arr) ? [...arr].sort((a,b) => (typeof a === 'number' && typeof b === 'number' ? a - b : String(a).localeCompare(String(b)))) : [],
+      sirala: (arr) => Array.isArray(arr) ? [...arr].sort((a,b) => (typeof a === 'number' && typeof b === 'number' ? a - b : String(a).localeCompare(String(b)))) : [],
+      toplam: (arr) => Array.isArray(arr) ? arr.reduce((a, b) => a + (Number(b) || 0), 0) : 0,
+      enBüyük: (arr) => Array.isArray(arr) ? Math.max(...arr) : null,
+      enBuyuk: (arr) => Array.isArray(arr) ? Math.max(...arr) : null,
+      enKüçük: (arr) => Array.isArray(arr) ? Math.min(...arr) : null,
+      enKucuk: (arr) => Array.isArray(arr) ? Math.min(...arr) : null,
+      filtrele: (arr, fn) => Array.isArray(arr) ? arr.filter(item => fn(item)) : [],
+      haritala: (arr, fn) => Array.isArray(arr) ? arr.map(item => fn(item)) : [],
+      bul: (arr, fn) => Array.isArray(arr) ? (arr.find(item => fn(item)) ?? null) : null,
+      içerir: (arr, item) => Array.isArray(arr) ? arr.includes(item) : false,
+      icerir: (arr, item) => Array.isArray(arr) ? arr.includes(item) : false,
+      benzersiz: (arr) => Array.isArray(arr) ? [...new Set(arr)] : []
     };
     this.global.define('Dizi', Dizi, true);
+    this.global.define('ekle', (arr, item) => Dizi.ekle(arr, item));
+    this.global.define('çıkar', (arr) => Dizi.çıkar(arr));
+    this.global.define('cikar', (arr) => Dizi.çıkar(arr));
 
     // Zaman Kütüphanesi
     const Zaman = {
@@ -377,8 +399,143 @@ class Interpreter {
     this.global.define('Kopru', Kopru, true);
     this.global.define('Entegrasyon', Kopru, true);
 
+    // 📁 7. Dosya Kütüphanesi
+    const Dosya = {
+      oku: (yol, kodlama = 'utf8') => {
+        if (typeof require !== 'undefined') {
+          const fs = require('fs');
+          if (!fs.existsSync(yol)) throw new Error(`Dosya bulunamadı: '${yol}'`);
+          return fs.readFileSync(yol, kodlama);
+        }
+        throw new Error('Dosya okuma sistem ortamında çalışır.');
+      },
+      yaz: (yol, icerik) => {
+        if (typeof require !== 'undefined') {
+          const fs = require('fs');
+          fs.writeFileSync(yol, String(icerik), 'utf8');
+          return true;
+        }
+        throw new Error('Dosya yazma sistem ortamında çalışır.');
+      },
+      ekle: (yol, icerik) => {
+        if (typeof require !== 'undefined') {
+          const fs = require('fs');
+          fs.appendFileSync(yol, String(icerik), 'utf8');
+          return true;
+        }
+        throw new Error('Dosyaya ekleme sistem ortamında çalışır.');
+      },
+      var_mi: (yol) => typeof require !== 'undefined' ? require('fs').existsSync(yol) : false,
+      varMi: (yol) => Dosya.var_mi(yol),
+      sil: (yol) => {
+        if (typeof require !== 'undefined') {
+          const fs = require('fs');
+          if (fs.existsSync(yol)) { fs.unlinkSync(yol); return true; }
+          return false;
+        }
+        return false;
+      },
+      satirlar: (yol) => {
+        if (typeof require !== 'undefined') {
+          const fs = require('fs');
+          if (!fs.existsSync(yol)) throw new Error(`Dosya bulunamadı: '${yol}'`);
+          return fs.readFileSync(yol, 'utf8').split(/\r?\n/);
+        }
+        return [];
+      },
+      listele: (dizinYolu = '.') => typeof require !== 'undefined' ? require('fs').readdirSync(dizinYolu) : []
+    };
+    this.global.define('Dosya', Dosya, true);
+
+    // 🌐 8. Ağ ve HTTP İstemcisi
+    const Ag = {
+      getir: (url) => {
+        if (typeof require !== 'undefined') {
+          const { execSync } = require('child_process');
+          try {
+            const cmd = process.platform === 'win32' ? `curl.exe -s -L "${url}"` : `curl -s -L "${url}"`;
+            const raw = execSync(cmd, { encoding: 'utf8', maxBuffer: 15 * 1024 * 1024 });
+            try { return JSON.parse(raw); } catch { return raw; }
+          } catch (e) {
+            throw new Error(`Ağ isteği başarısız: ${e.message}`);
+          }
+        }
+        throw new Error('Ağ istekleri sistem ortamında çalışır.');
+      },
+      gonder: (url, veri) => {
+        if (typeof require !== 'undefined') {
+          const { execSync } = require('child_process');
+          const strVeri = typeof veri === 'object' ? JSON.stringify(veri) : String(veri);
+          try {
+            const cmd = process.platform === 'win32'
+              ? `curl.exe -s -L -X POST -H "Content-Type: application/json" -d "${strVeri.replace(/"/g, '\\"')}" "${url}"`
+              : `curl -s -L -X POST -H "Content-Type: application/json" -d '${strVeri.replace(/'/g, "'\\''")}' "${url}"`;
+            const raw = execSync(cmd, { encoding: 'utf8', maxBuffer: 15 * 1024 * 1024 });
+            try { return JSON.parse(raw); } catch { return raw; }
+          } catch (e) {
+            throw new Error(`Ağ POST isteği başarısız: ${e.message}`);
+          }
+        }
+        throw new Error('Ağ istekleri sistem ortamında çalışır.');
+      }
+    };
+    this.global.define('Ag', Ag, true);
+    this.global.define('Ağ', Ag, true);
+
+    // 💻 9. Sistem ve İşletim Sistemi Arayüzü
+    const Sistem = {
+      calistir: (komut) => {
+        if (typeof require !== 'undefined') {
+          const { execSync } = require('child_process');
+          try { return execSync(komut, { encoding: 'utf8' }).trim(); }
+          catch (e) { return e.stdout ? e.stdout.toString().trim() : e.message; }
+        }
+        return '';
+      },
+      argumanlar: typeof process !== 'undefined' ? process.argv.slice(2) : [],
+      ortam: (anahtar) => typeof process !== 'undefined' ? (process.env[anahtar] || '') : '',
+      dizin: () => typeof process !== 'undefined' ? process.cwd() : '',
+      platform: typeof process !== 'undefined' ? process.platform : 'web',
+      cikis: (kod = 0) => { if (typeof process !== 'undefined') process.exit(kod); },
+      uyut: (ms) => {
+        const start = Date.now();
+        while (Date.now() - start < ms) {}
+        return true;
+      }
+    };
+    this.global.define('Sistem', Sistem, true);
+
+    // 📋 10. JSON Veri Dönüştürücüsü
+    const JSON_Lib = {
+      coz: (metin) => {
+        try { return JSON.parse(metin); }
+        catch (e) { throw new Error('Geçersiz JSON verisi: ' + e.message); }
+      },
+      ayristir: (metin) => JSON_Lib.coz(metin),
+      uret: (veri, girinti = 2) => JSON.stringify(veri, null, girinti),
+      yaz: (veri) => JSON.stringify(veri)
+    };
+    this.global.define('JSON', JSON_Lib, true);
+
+    // 🎲 11. Rastgelelik ve Seçim
+    const Rastgele = {
+      sayi: (min = 0, max = 100) => Math.floor(Math.random() * (max - min + 1)) + min,
+      ondalik: () => Math.random(),
+      sec: (arr) => Array.isArray(arr) && arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : null,
+      karistir: (arr) => {
+        if (!Array.isArray(arr)) return arr;
+        const kopya = [...arr];
+        for (let i = kopya.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [kopya[i], kopya[j]] = [kopya[j], kopya[i]];
+        }
+        return kopya;
+      }
+    };
+    this.global.define('Rastgele', Rastgele, true);
+
     // Tusi Bilgileri
-    this.global.define('TUSI_SURUM', '4.0.0-Ultra', true);
+    this.global.define('TUSI_SURUM', '5.0.0', true);
     this.global.define('GELISTIRICI', 'Tunahan Haksever', true);
   }
 
@@ -407,6 +564,34 @@ class Interpreter {
         }
         return result;
 
+      case 'ImportStatement': {
+        const filePath = node.path;
+        if (typeof require !== 'undefined') {
+          const fs = require('fs');
+          const path = require('path');
+          let resolvedPath = filePath;
+          if (!fs.existsSync(resolvedPath)) {
+            if (fs.existsSync(resolvedPath + '.tusi')) {
+              resolvedPath = resolvedPath + '.tusi';
+            } else if (fs.existsSync(path.join(process.cwd(), resolvedPath))) {
+              resolvedPath = path.join(process.cwd(), resolvedPath);
+            } else if (fs.existsSync(path.join(process.cwd(), resolvedPath + '.tusi'))) {
+              resolvedPath = path.join(process.cwd(), resolvedPath + '.tusi');
+            } else {
+              throw new Error(`[Satır ${node.line}] İçe aktarılacak dosya bulunamadı: '${filePath}'`);
+            }
+          }
+          const source = fs.readFileSync(resolvedPath, 'utf8');
+          const { Lexer } = require('./lexer');
+          const { Parser } = require('./parser');
+          const lexer = new Lexer(source);
+          const parser = new Parser(lexer.tokenize());
+          const ast = parser.parse();
+          return this.visit(ast);
+        }
+        throw new Error(`[Satır ${node.line}] 'dahil_et' sadece sistem / dosya ortamında çalışır.`);
+      }
+
       case 'VariableDeclaration': {
         const val = node.init ? this.visit(node.init) : null;
         this.env.define(node.name, val, node.isConst);
@@ -414,8 +599,9 @@ class Interpreter {
       }
 
       case 'FunctionDeclaration': {
+        const closureEnv = this.env;
         const fn = (...args) => {
-          const fnEnv = new Environment(this.env);
+          const fnEnv = new Environment(closureEnv);
           node.params.forEach((param, idx) => {
             fnEnv.define(param, args[idx] !== undefined ? args[idx] : null);
           });

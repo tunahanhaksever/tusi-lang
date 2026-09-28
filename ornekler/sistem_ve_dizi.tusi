@@ -1,0 +1,45 @@
+# ==========================================
+# Tusi Programlama Dili - Sistem, Dizi ve Algoritmalar
+# ==========================================
+
+yazdır("--- 1. Sistem ve Çevre Bilgisi ---")
+yazdır("İşletim Sistemi Platformu: " + Sistem.platform)
+yazdır("Çalışma Dizini: " + Sistem.dizin())
+
+değişken gitSurum = Sistem.calistir("git --version")
+yazdır("Sistem Komutu Çıktısı: " + gitSurum)
+
+yazdır("\n--- 2. İleri Dizi İşlemleri ---")
+değişken sayilar = [12, 5, 8, 130, 44, 5, 8, 99]
+yazdır("Orijinal Dizi: " + Metin.donustur(sayilar))
+
+değişken toplam = Dizi.toplam(sayilar)
+yazdır("Dizi Toplamı: " + toplam)
+
+değişken buyuk = Dizi.enBüyük(sayilar)
+değişken kucuk = Dizi.enKüçük(sayilar)
+yazdır("En Büyük Eleman: " + buyuk + ", En Küçük Eleman: " + kucuk)
+
+değişken tekil = Dizi.benzersiz(sayilar)
+yazdır("Tekilleştirilmiş Dizi: " + Metin.donustur(tekil))
+
+değişken sirali = Dizi.sırala(tekil)
+yazdır("Küçükten Büyüğe Sıralı: " + Metin.donustur(sirali))
+
+değişken filtrelenmis = Dizi.filtrele(sayilar, fonksiyon(x) {
+  döndür x > 20
+})
+yazdır("20'den Büyük Olanlar: " + Metin.donustur(filtrelenmis))
+
+değişken ikiKati = Dizi.haritala(filtrelenmis, fonksiyon(x) {
+  döndür x * 2
+})
+yazdır("İki Katı Alınmış Hali: " + Metin.donustur(ikiKati))
+
+yazdır("\n--- 3. Rastgelelik ve Seçim ---")
+değişken sansliSayi = Rastgele.sayi(1, 100)
+yazdır("1 ile 100 Arası Rastgele Sayı: " + sansliSayi)
+
+değişken sehirler = ["Ankara", "İstanbul", "Trabzon", "Bursa", "İzmir"]
+değişken secilenSehir = Rastgele.sec(sehirler)
+yazdır("Rastgele Seçilen Şehir: " + secilenSehir)

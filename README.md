@@ -1,18 +1,18 @@
-# Tusi Programming System (v4.0 Ultra Core)
+# Tusi Programming System (v5.0 Core Engine)
 
 <div align="center">
 
-![Tusi Lang Banner](https://img.shields.io/badge/Tusi_System-v4.0.0-e11d48?style=for-the-badge&logo=codeforces&logoColor=white)
+![Tusi Lang Banner](https://img.shields.io/badge/Tusi_System-v5.0.0-e11d48?style=for-the-badge&logo=codeforces&logoColor=white)
 ![Author](https://img.shields.io/badge/Geli%C5%9Ftirici-Tunahan_Haksever-00f0ff?style=for-the-badge&logo=github&logoColor=white)
+![Core Engine](https://img.shields.io/badge/Engine-AST_Interpreter-10b981?style=for-the-badge)
 ![GUI Engine](https://img.shields.io/badge/Desktop_GUI-TusiGUI_Engine-ff007f?style=for-the-badge)
 ![Package Manager](https://img.shields.io/badge/Paket_Y%C3%B6netimi-TPM_Hub-fbbf24?style=for-the-badge)
-![Online Studio](https://img.shields.io/badge/Web_Studio-Canl%C4%B1-10b981?style=for-the-badge&logo=google-chrome&logoColor=white)
 
 **Diller / Languages / Sprachen:** **[🇹🇷 Türkçe](README.md)** • [🇬🇧 English](README.en.md) • [🇩🇪 Deutsch](README.de.md)
 
-**Tunahan Haksever tarafından geliştirilen; yüksek okunabilirlik, yerel görsel arayüz desteği (TusiGUI), ticari otomasyon araçları ve yapay zeka entegrasyonu sunan bağımsız, modern ve çok yönlü programlama sistemi.**
+**Tunahan Haksever tarafından geliştirilen; modüler mimariye sahip, dosya I/O, HTTP ağ istemcisi, sistem çağrıları, yerel grafik arayüz (TusiGUI) ve ticari otomasyon araçları sunan bağımsız, yerli ve güçlü programlama dili.**
 
-[🌐 Web Studio & Dokümantasyon](#-web-studio--canlı-laboratuvar) • [🖥️ TusiGUI Görsel Arayüz](#-1-tusigui-görsel-arayüz-motoru) • [💼 Ticari Muhasebe & E-Fatura](#-2-ticari-muhasebe-ve-finans-kütüphanesi) • [📦 TPM Paket Yöneticisi](#-3-tpm-paket-yöneticisi) • [Kurulum](#-kurulum)
+[🌐 Web Studio & Dokümantasyon](#-web-studio--canlı-laboratuvar) • [📁 Dosya & Ağ Kütüphaneleri](#-yeni-v50-kütüphaneleri) • [🖥️ TusiGUI Görsel Arayüz](#-1-tusigui-görsel-arayüz-motoru) • [💼 Ticari Muhasebe](#-2-ticari-muhasebe-ve-finans-kütüphanesi) • [Kurulum](#-kurulum)
 
 </div>
 
@@ -40,9 +40,69 @@ komutlarını kullanabilirsiniz.
 
 ---
 
-## 🚀 Temel Kütüphaneler ve Mimariler
+## 🚀 v5.0 Çekirdek Kütüphaneleri ve Modül Mimarisi
 
-### 🖥️ 1. TusiGUI Görsel Arayüz Motoru (`Arayüz`)
+### 🧩 1. Modül Sistemi (`dahil_et`)
+Kodlarınızı parçalara ayırıp harici dosyaları projenize kolayca dahil edebilirsiniz:
+```tusi
+# Harici matematik modülünü yükle
+dahil_et "ornekler/modul_matematik.tusi"
+
+değişken sonuc = topla(50, 75)
+yazdır("Sonuç:", sonuc)
+```
+
+### 📁 2. Dosya Yönetimi (`Dosya`)
+Sistem üzerinde kalıcı dosya okuma, satır dökümü alma, yazma ve denetim:
+```tusi
+Dosya.yaz("kayitlar.txt", "Pardus ve Tusi Ekosistemi")
+eğer (Dosya.var_mi("kayitlar.txt")) {
+  değişken veri = Dosya.oku("kayitlar.txt")
+  yazdır("Dosya Verisi:", veri)
+}
+```
+
+### 🌐 3. Ağ ve HTTP İstemcisi (`Ag` / `Ağ`)
+Harici REST API'lere bağlanma ve web servislerinden veri çekme:
+```tusi
+değişken yanit = Ag.getir("https://jsonplaceholder.typicode.com/todos/1")
+yazdır("Başlık:", yanit.title)
+yazdır("Durum :", yanit.completed)
+```
+
+### 💻 4. Sistem ve Süreç Yönetimi (`Sistem`)
+İşletim sistemi kabuk komutlarını çalıştırma, çevre değişkenleri ve sistem platformu:
+```tusi
+yazdır("Platform:", Sistem.platform)
+yazdır("Dizin   :", Sistem.dizin())
+değişken cikti = Sistem.calistir("git --version")
+yazdır("Çıktı   :", cikti)
+```
+
+### 📋 5. JSON Dönüştürücü (`JSON`)
+JSON nesnelerini metne çevirme ve ayrıştırma:
+```tusi
+değişken profil = { ad: "Tunahan", dil: "Tusi" }
+değişken jsonMetni = JSON.uret(profil)
+değişken nesne = JSON.coz(jsonMetni)
+yazdır("Geliştirici:", nesne.ad)
+```
+
+### ⚡ 6. İleri Dizi İşlemleri (`Dizi`)
+Modern fonksiyonel programlama desteği (filtreleme, haritalama, tekilleştirme):
+```tusi
+değişken sayilar = [5, 12, 8, 130, 44, 5]
+değişken tekil = Dizi.benzersiz(sayilar)
+değişken filtrelenmis = Dizi.filtrele(tekil, fonksiyon(x) { döndür x > 10 })
+değişken ikiKati = Dizi.haritala(filtrelenmis, fonksiyon(x) { döndür x * 2 })
+yazdır("İşlenmiş Veri:", ikiKati)
+```
+
+---
+
+## 🎨 Masaüstü & Ticari Kütüphaneler
+
+### 🖥️ 7. TusiGUI Görsel Arayüz Motoru (`Arayüz`)
 
 Masaüstü ve web ortamında görsel pencereler, formlar, tablolar ve butonlar oluşturabilirsiniz:
 

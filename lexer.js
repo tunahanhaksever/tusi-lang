@@ -32,6 +32,7 @@ const TokenType = {
   CLASS: 'sınıf',
   THIS: 'bu',
   NEW: 'yeni',
+  IMPORT: 'dahil_et',
 
   // Operators
   PLUS: '+',
@@ -120,7 +121,13 @@ const KEYWORDS = {
   'sınıf': TokenType.CLASS,
   'sinif': TokenType.CLASS,
   'bu': TokenType.THIS,
-  'yeni': TokenType.NEW
+  'yeni': TokenType.NEW,
+  'dahil_et': TokenType.IMPORT,
+  'dahilet': TokenType.IMPORT,
+  'aktar': TokenType.IMPORT,
+  'içe_aktar': TokenType.IMPORT,
+  'ice_aktar': TokenType.IMPORT,
+  'import': TokenType.IMPORT
 };
 
 class Token {

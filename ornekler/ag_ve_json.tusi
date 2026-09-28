@@ -1,0 +1,26 @@
+# ==========================================
+# Tusi Programlama Dili - JSON ve Ağ Yönetimi
+# ==========================================
+
+yazdır("--- 1. JSON Nesne Üretimi ve Çözümlemesi ---")
+
+değişken profil = {
+  ad: "Tunahan",
+  rol: "Açık Kaynak Geliştirici",
+  dil: "Tusi",
+  surum: 5
+}
+
+değişken jsonMetin = JSON.uret(profil)
+yazdır("Üretilen JSON Metni:")
+yazdır(jsonMetin)
+
+değişken cozulenVeri = JSON.coz(jsonMetin)
+yazdır("Çözülen Nesne Üzerinden Erişim:")
+yazdır("Geliştirici: " + cozulenVeri.ad)
+yazdır("Rol: " + cozulenVeri.rol)
+
+yazdır("\n--- 2. Ağ İstemcisi Testi (HTTP GET) ---")
+değişken yanit = Ag.getir("https://jsonplaceholder.typicode.com/todos/1")
+yazdır("Gelen Başlık: " + yanit.title)
+yazdır("Tamamlandı mı: " + yanit.completed)

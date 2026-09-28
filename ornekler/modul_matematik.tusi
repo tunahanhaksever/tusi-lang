@@ -1,0 +1,22 @@
+# ==========================================
+# Tusi Programlama Dili - Matematik Modülü
+# ==========================================
+
+fonksiyon topla(a, b) {
+  döndür a + b
+}
+
+fonksiyon carp(a, b) {
+  döndür a * b
+}
+
+fonksiyon kareAl(sayi) {
+  döndür sayi * sayi
+}
+
+fonksiyon faktoriyel(n) {
+  eğer (n <= 1) {
+    döndür 1
+  }
+  döndür n * faktoriyel(n - 1)
+}
